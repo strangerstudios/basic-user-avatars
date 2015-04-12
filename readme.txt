@@ -22,7 +22,7 @@ Note: This plugin is a fork of Simple Local Avatars v1.3.1 by Jake Goldman (10up
 
 == Installation ==
 
-1. Upload `bbpress-genesis-extend` to your `/wp-content/plugins/` directory or download through the Plugins page
+1. Upload `basic-user-avatars` to your `/wp-content/plugins/` directory or download through the Plugins page
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. If you only want users with file upload capabilities to upload avatars, check the applicable option under Settings > Discussion
 1. Start uploading avatars by editing user profiles!
