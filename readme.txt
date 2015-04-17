@@ -49,6 +49,9 @@ If things are still not functioning incorrectly then proceed to reporting an iss
 
 == Changelog ==
 
+= 1.0.2 (4/17/2015)
+* Added POT file for translation
+
 = 1.0.1 (3/17/2015)
 * Updated textdomain for better support
 * Added plugin to GitHub for better collaboration
