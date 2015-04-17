@@ -346,7 +346,7 @@ class basic_user_avatars {
 				}	
 			}
 			?>
-			<input type="submit" name="manage_avatar_submit" value="Update Avatar" />
+			<input type="submit" name="manage_avatar_submit" value="<?php _e( 'Update Avatar', 'basic-user-avatars' ); ?>" />
 		</form>
 		<?php
 		return ob_get_clean();
