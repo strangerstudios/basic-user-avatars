@@ -3,7 +3,7 @@ Contributors: jaredatch
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AD8KTWTTDX9JL
 Tags: avatar, gravatar, bbpress, profiles
 Requires at least: 4.0
-Tested up to: 4.1
+Tested up to: 4.2
 Stable tag: trunk
  
 Adds an avatar upload field to user profiles. Front-end support. bbPress support.
@@ -48,6 +48,9 @@ If things are still not functioning incorrectly then proceed to reporting an iss
 1. Option on the bbPress user profile edit page. 
 
 == Changelog ==
+
+= 1.0.3 (5/8/2015)
+* Added Swedish and Finnish translations - props dmaester
 
 = 1.0.2 (4/17/2015)
 * Added POT file for translation
