@@ -166,14 +166,19 @@ class basic_user_avatars {
 			$upload_path      = wp_upload_dir();
 			$avatar_full_path = str_replace( $upload_path['baseurl'], $upload_path['basedir'], $local_avatars['full'] );
 			$image            = wp_get_image_editor( $avatar_full_path );
+			$image_sized      = null;
 
 			if ( ! is_wp_error( $image ) ) {
 				$image->resize( $size, $size, true );
 				$image_sized = $image->save();
 			}
 
-			// Deal with original being >= to original image (or lack of sizing ability)
-			$local_avatars[$size] = is_wp_error( $image_sized ) ? $local_avatars[$size] = $local_avatars['full'] : str_replace( $upload_path['basedir'], $upload_path['baseurl'], $image_sized['path'] );
+			// Deal with original being >= to original image (or lack of sizing ability).
+			if ( empty( $image_sized ) || is_wp_error( $image_sized ) ) {
+				$local_avatars[ $size ] = $local_avatars['full'];
+			} else {
+				$local_avatars[ $size ] = str_replace( $upload_path['basedir'], $upload_path['baseurl'], $image_sized['path'] );
+			}
 
 			// Save updated avatar sizes
 			update_user_meta( $user_id, 'basic_user_avatar', $local_avatars );
