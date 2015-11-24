@@ -49,7 +49,7 @@ If things are still not functioning incorrectly then proceed to reporting an iss
 
 == Changelog ==
 
-= 1.1.0 (Unreleased)
+= 1.0.4 (Unreleased)
 * Added proper SSL support - props zachwills
 
 = 1.0.3 (5/8/2015)
