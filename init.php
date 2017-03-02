@@ -3,18 +3,15 @@
  * Plugin Name: Basic User Avatars
  * Plugin URI:  http://wordpress.org/extend/basic-user-avatars
  * Description: Adds an avatar upload field to user profiles. Also provides front-end avatar management via a shortcode and bbPress support. No frills. Fork of Simple Local Avatars 1.3.
- * Version:     1.0.3
- * Author:      Jared Atchison
- * Author URI:  http://jaredatchison.com
+ * Version:     1.0.4
+ * Author:      john Catnach
+ * Author URI:  http://catnach.co.uk
  *
  * ---------------------------------------------------------------------------//
- * This plugin is a fork of Simple Local Avatars v1.3.1 by Jake Goldman (10up).
+ * This plugin is a fork of SBasic User Avatars c1.0.3 by Jared Atchison (10up).
  *
- * Orignal author url:  http://get10up.com
- * Original plugin url: http://wordpress.org/plugins/simple-local-avatars
+ * Orignal author url:  http://jaredatchison.com
  *
- * If you want some snazzy ajax and some other nifty features, check out Simple
- * Local Avatars 2.0+
  * ---------------------------------------------------------------------------//
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,11 +27,9 @@
  * You should have received a copy of the GNU General Public License
  * along with WP Forms. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author     Jared Atchison
- * @version    1.0.3
- * @package    JA_BasicLocalAvatars
- * @copyright  Copyright (c) 2015, Jared Atchison
- * @link       http://jaredatchison.com
+ * @author     John Catnach
+ * @version    1.0.4
+ * @package    JC_BasicLocalAvatars
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
@@ -71,6 +66,7 @@ class basic_user_avatars {
 
 		// Filters
 		add_filter( 'get_avatar',                array( $this, 'get_avatar'               ), 10, 5 );
+		add_filter( 'get_avatar_url',            array( $this, 'get_avatar_url'               ), 10, 5 );
 		add_filter( 'avatar_defaults',           array( $this, 'avatar_defaults'          )        );
 	}
 
@@ -137,8 +133,7 @@ class basic_user_avatars {
 	 * @param boolean $alt 
 	 * @return string
 	 */
-	public function get_avatar( $avatar = '', $id_or_email, $size = 96, $default = '', $alt = false ) {
-
+	public function get_avatar( $avatar = '',$id_or_email, $size = 96, $default = '', $alt = false ) {
 		// Determine if we recive an ID or string
 		if ( is_numeric( $id_or_email ) )
 			$user_id = (int) $id_or_email;
@@ -159,6 +154,70 @@ class basic_user_avatars {
 
 		if ( empty( $alt ) )
 			$alt = get_the_author_meta( 'display_name', $user_id );
+
+		// Generate a new size
+		if ( empty( $local_avatars[$size] ) ) {
+
+			$upload_path      = wp_upload_dir();
+			$avatar_full_path = str_replace( $upload_path['baseurl'], $upload_path['basedir'], $local_avatars['full'] );
+			$image            = wp_get_image_editor( $avatar_full_path );
+
+			if ( ! is_wp_error( $image ) ) {
+				$image->resize( $size, $size, true );
+				$image_sized = $image->save();
+			}
+
+			// Deal with original being >= to original image (or lack of sizing ability)
+			$local_avatars[$size] = is_wp_error( $image_sized ) ? $local_avatars[$size] = $local_avatars['full'] : str_replace( $upload_path['basedir'], $upload_path['baseurl'], $image_sized['path'] );
+
+			// Save updated avatar sizes
+			update_user_meta( $user_id, 'basic_user_avatar', $local_avatars );
+
+		} elseif ( substr( $local_avatars[$size], 0, 4 ) != 'http' ) {
+			$local_avatars[$size] = home_url( $local_avatars[$size] );
+		}
+		
+		if ( is_ssl() ) {
+			$local_avatars[ $size ] = str_replace( 'http:', 'https:', $local_avatars[ $size ] );
+		}
+
+		$author_class = is_author( $user_id ) ? ' current-author' : '' ;
+		$avatar       = "<img alt='" . esc_attr( $alt ) . "' src='" . $local_avatars[$size] . "' class='avatar avatar-{$size}{$author_class} photo' height='{$size}' width='{$size}' />";
+
+		return apply_filters( 'basic_user_avatar', $avatar );
+	}
+
+	/**
+	 * Filter the avatar WordPress returns and return a url only
+	 *
+	 * @since 1.0.4
+	 * @param string $avatar 
+	 * @param int/string/object $id_or_email
+	 * @param array $args accepts size
+	 * @return string
+	 */
+	public function get_avatar_url( $avatar='',$id_or_email, $args = null ) {
+
+		// Determine if we recive an ID or string
+		if ( is_numeric( $id_or_email ) )
+			$user_id = (int) $id_or_email;
+		elseif ( is_string( $id_or_email ) && ( $user = get_user_by( 'email', $id_or_email ) ) )
+			$user_id = $user->ID;
+		elseif ( is_object( $id_or_email ) && ! empty( $id_or_email->user_id ) )
+			$user_id = (int) $id_or_email->user_id;
+
+		if ( empty( $user_id ) )
+			return '';
+
+		$local_avatars = get_user_meta( $user_id, 'basic_user_avatar', true );
+
+		if ( empty( $local_avatars ) || empty( $local_avatars['full'] ) )
+			return $avatar;
+		
+		$size = 96;
+		if ( ! empty( $args['size'] ) ){
+			$size = intval($args['size']);
+		}
 
 		// Generate a new size
 		if ( empty( $local_avatars[$size] ) ) {
@@ -188,15 +247,14 @@ class basic_user_avatars {
 		}
 
 		if ( is_ssl() ) {
-			$local_avatars[ $size ] = str_replace( 'http', 'https', $local_avatars[ $size ] );
+			$local_avatars[ $size ] = str_replace( 'http:', 'https:', $local_avatars[ $size ] );
 		}
 
-		$author_class = is_author( $user_id ) ? ' current-author' : '' ;
-		$avatar       = "<img alt='" . esc_attr( $alt ) . "' src='" . $local_avatars[$size] . "' class='avatar avatar-{$size}{$author_class} photo' height='{$size}' width='{$size}' />";
+		$avatarurl       =  $local_avatars[$size] . '?size=' . $size;
 
-		return apply_filters( 'basic_user_avatar', $avatar );
+		return $avatarurl;
 	}
-
+	
 	/**
 	 * Form to display on the user profile edit screen
 	 *
