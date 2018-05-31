@@ -194,7 +194,7 @@ class basic_user_avatars {
 		$author_class = is_author( $user_id ) ? ' current-author' : '' ;
 		$avatar       = "<img alt='" . esc_attr( $alt ) . "' src='" . $local_avatars[$size] . "' class='avatar avatar-{$size}{$author_class} photo' height='{$size}' width='{$size}' />";
 
-		return apply_filters( 'basic_user_avatar', $avatar );
+		return apply_filters( 'basic_user_avatar', $avatar, $user_id );
 	}
 
 	/**
