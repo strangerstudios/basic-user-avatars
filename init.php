@@ -1,483 +1,376 @@
 <?php
 /**
- * Plugin Name: Basic User Avatars
- * Plugin URI:  http://wordpress.org/extend/basic-user-avatars
- * Description: Adds an avatar upload field to user profiles. Also provides front-end avatar management via a shortcode and bbPress support. No frills. Fork of Simple Local Avatars 1.3.
- * Version:     1.0.3
- * Author:      Jared Atchison
- * Author URI:  http://jaredatchison.com
- *
- * ---------------------------------------------------------------------------//
- * This plugin is a fork of Simple Local Avatars v1.3.1 by Jake Goldman (10up).
- *
- * Orignal author url:  http://get10up.com
- * Original plugin url: http://wordpress.org/plugins/simple-local-avatars
- *
- * If you want some snazzy ajax and some other nifty features, check out Simple
- * Local Avatars 2.0+
- * ---------------------------------------------------------------------------//
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with WP Forms. If not, see <http://www.gnu.org/licenses/>.
- *
- * @author     Jared Atchison
- * @version    1.0.3
- * @package    JA_BasicLocalAvatars
- * @copyright  Copyright (c) 2015, Jared Atchison
- * @link       http://jaredatchison.com
- * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * Plugin Name: Upload User Avatars
+ * Description: Enables upload of local avatar from admin or frontend
+ * Version:     1.0.0
+ * Author:      Tim Kaye
+ * Author URI:  https://timkaye.org
+ * Text domain: upload-user-avatars
  */
 
-class basic_user_avatars {
+/**
+ * Add settings to Discussion page in admin
+ */
+function kts_avatar_admin_init() {	
 
-	/**
-	 * User ID
-	 *
-	 * @since 1.0.0
-	 * @var int
-	 */
-	private $user_id_being_edited;
+	register_setting( 'discussion', 'upload_user_avatars_caps', 'kts_avatar_checkbox_options' );
+	add_settings_field( 'upload-user-avatars-caps', __( 'Local Avatar Permissions', 'upload-user-avatars' ), 'kts_avatar_settings_field', 'discussion', 'avatars', array( 'label_for' => 'upload_user_avatars_caps' ) );
 
-	/**
-	 * Initialize all the things
-	 *
-	 * @since 1.0.0
-	 */
-	public function __construct() {
+	register_setting( 'discussion', 'upload_user_avatars_folder', 'sanitize_text_field' );
+	add_settings_field( 'upload-user-avatars-folder', __( 'Choose Avatar Folder', 'upload-user-avatars' ), 'kts_avatar_uploads_folder', 'discussion', 'avatars', array( 'label_for' => 'upload_user_avatars_folder' ) );
 
-		// Text domain
-		$this->load_textdomain();
+}
+add_action( 'admin_init', 'kts_avatar_admin_init' );
 
-		// Actions
-		add_action( 'admin_init',                array( $this, 'admin_init'               )        );
-		add_action( 'show_user_profile',         array( $this, 'edit_user_profile'        )        );
-		add_action( 'edit_user_profile',         array( $this, 'edit_user_profile'        )        );
-		add_action( 'personal_options_update',   array( $this, 'edit_user_profile_update' )        );
-		add_action( 'edit_user_profile_update',  array( $this, 'edit_user_profile_update' )        );
-		add_action( 'bbp_user_edit_after_about', array( $this, 'bbpress_user_profile'     )        );
+/**
+ * Discussion settings option
+ */
+function kts_avatar_settings_field( $args ) {
+	$caps = get_option( 'upload_user_avatars_caps' ); ?>
 
-		// Shortcode
-		add_shortcode( 'basic-user-avatars',     array( $this, 'shortcode'                )        );
+	<input type="checkbox" name="upload_user_avatars_caps" id="upload_user_avatars_caps" <?php if ( ! empty( $caps ) ) { echo 'checked'; } ?>>
 
-		// Filters
-		add_filter( 'get_avatar',                array( $this, 'get_avatar'               ), 10, 5 );
-		add_filter( 'avatar_defaults',           array( $this, 'avatar_defaults'          )        );
+	<?php _e( 'Only allow users with file upload capabilities (authors and above) to upload local avatars', 'upload-user-avatars' );
+}
+
+/**
+ * Decide whether to limit who can upload an avatar to just authors and above
+ */
+function kts_avatar_checkbox_options( $input ) {
+	return empty( $_POST['upload_user_avatars_caps'] ) ? 0 : 1;
+}
+
+/**
+ * Avatar uploads folder choice
+ */
+function kts_avatar_uploads_folder( $args ) {
+	$folder = get_option( 'upload_user_avatars_folder' ); ?>
+
+	<?php _e( '<p>Choose the folder to which you want avatars to be uploaded, relative to the uploads folder. If the folder does not exist, it will be created.</p>', 'upload-user-avatars' ); ?>
+
+	<input type="text" class="regular-text" name="upload_user_avatars_folder" id="upload_user_avatars_folder" value="<?php echo esc_attr( $folder ); ?>"> &nbsp;
+
+	<?php _e( '<p>You might, for example, type <code>avatars</code> to have avatars uploaded to the <code>/uploads/avatars</code> folder, or <code>users/avatars</code> to have avatars uploaded to the <code>/uploads/users/avatars</code> folder.</p>', 'upload-user-avatars' );
+	_e( '<p>Leave blank to use the uploads folder itself (or month- and year-based folders if you have selected that option on the Media Settings page).</p>', 'upload-user-avatars' );
+}
+
+/**
+ * Sanitize the uploads folder choice
+ */
+function kts_avatar_sanitize_folders( $input ) {
+	return sanitize_text_field( $_POST['upload_user_avatars_folder'] );	 
+}
+
+/**
+ * Change the upload folder for avatars
+ */
+function kts_avatar_change_upload_dir( $dirs ) {
+	$folder = get_option( 'upload_user_avatars_folder' );
+	$folder = ltrim( $folder, '/' );
+	$folder = rtrim( $folder, '/' );
+	if ( ! empty( $folder ) ) {
+		$dirs['subdir'] = '/' . $folder;
+		$dirs['path'] = $dirs['basedir'] . '/' . $folder;
+		$dirs['url'] = $dirs['baseurl'] . '/' . $folder;
 	}
+    return $dirs;
+}
 
-	/**
-	 * Loads the plugin language files.
-	 *
-	 * @since 1.0.1
-	 */
-	public function load_textdomain() {
-		$domain = 'basic-user-avatars';
-		$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
-		load_textdomain( $domain, WP_LANG_DIR . '/' . $domain . '/' . $domain . '-' . $locale . '.mo' );
-		load_plugin_textdomain( $domain, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+/**
+ * Filter the avatar returned
+ */
+function kts_get_avatar( $avatar = '', $id_or_email, $size = 96, $default = '', $alt = false ) {
+
+	# Determine if we receive an ID, user object, or email
+	if ( is_numeric( $id_or_email ) ) {
+		$user_id = (int) $id_or_email;
 	}
-
-	/**
-	 * Start the admin engine.
-	 *
-	 * @since 1.0.0
-	 */
-	public function admin_init() {
-
-		// Register/add the Discussion setting to restrict avatar upload capabilites
-		register_setting( 'discussion', 'basic_user_avatars_caps', array( $this, 'sanitize_options' ) );
-		add_settings_field( 'basic-user-avatars-caps', __( 'Local Avatar Permissions', 'basic-user-avatars' ), array( $this, 'avatar_settings_field' ), 'discussion', 'avatars' );
+	else if ( is_object( $id_or_email ) && ! empty( $id_or_email->user_id ) ) {
+		$user_id = (int) $id_or_email->user_id;
 	}
-
-	/**
-	 * Discussion settings option
-	 *
-	 * @since 1.0.0
-	 * @param array $args [description]
-	 */
-	public function avatar_settings_field( $args ) {
-		$options = get_option( 'basic_user_avatars_caps' );
-		?>
-		<label for="basic_user_avatars_caps">
-			<input type="checkbox" name="basic_user_avatars_caps" id="basic_user_avatars_caps" value="1" <?php checked( $options['basic_user_avatars_caps'], 1 ); ?>/>
-			<?php _e( 'Only allow users with file upload capabilities to upload local avatars (Authors and above)', 'basic-user-avatars' ); ?>
-		</label>
-		<?php
-	}
-
-	/**
-	 * Sanitize the Discussion settings option
-	 *
-	 * @since 1.0.0
-	 * @param array $input
-	 * @return array
-	 */
-	public function sanitize_options( $input ) {
-		$new_input['basic_user_avatars_caps'] = empty( $input['basic_user_avatars_caps'] ) ? 0 : 1;
-		return $new_input;
-	}
-
-	/**
-	 * Filter the avatar WordPress returns
-	 *
-	 * @since 1.0.0
-	 * @param string $avatar 
-	 * @param int/string/object $id_or_email
-	 * @param int $size 
-	 * @param string $default
-	 * @param boolean $alt 
-	 * @return string
-	 */
-	public function get_avatar( $avatar = '', $id_or_email, $size = 96, $default = '', $alt = false ) {
-
-		// Determine if we recive an ID or string
-		if ( is_numeric( $id_or_email ) )
-			$user_id = (int) $id_or_email;
-		elseif ( is_string( $id_or_email ) && ( $user = get_user_by( 'email', $id_or_email ) ) )
+	else if ( is_email( $id_or_email ) ) {
+		$user = get_user_by( 'email', $id_or_email );
+		if ( ! empty( $user ) ) {
 			$user_id = $user->ID;
-		elseif ( is_object( $id_or_email ) && ! empty( $id_or_email->user_id ) )
-			$user_id = (int) $id_or_email->user_id;
-
-		if ( empty( $user_id ) )
-			return $avatar;
-
-		$local_avatars = get_user_meta( $user_id, 'basic_user_avatar', true );
-
-		if ( empty( $local_avatars ) || empty( $local_avatars['full'] ) )
-			return $avatar;
-
-		$size = (int) $size;
-
-		if ( empty( $alt ) )
-			$alt = get_the_author_meta( 'display_name', $user_id );
-
-		// Generate a new size
-		if ( empty( $local_avatars[$size] ) ) {
-
-			$upload_path      = wp_upload_dir();
-			$avatar_full_path = str_replace( $upload_path['baseurl'], $upload_path['basedir'], $local_avatars['full'] );
-			$image            = wp_get_image_editor( $avatar_full_path );
-			$image_sized      = null;
-
-			if ( ! is_wp_error( $image ) ) {
-				$image->resize( $size, $size, true );
-				$image_sized = $image->save();
-			}
-
-			// Deal with original being >= to original image (or lack of sizing ability).
-			if ( empty( $image_sized ) || is_wp_error( $image_sized ) ) {
-				$local_avatars[ $size ] = $local_avatars['full'];
-			} else {
-				$local_avatars[ $size ] = str_replace( $upload_path['basedir'], $upload_path['baseurl'], $image_sized['path'] );
-			}
-
-			// Save updated avatar sizes
-			update_user_meta( $user_id, 'basic_user_avatar', $local_avatars );
-
-		} elseif ( substr( $local_avatars[$size], 0, 4 ) != 'http' ) {
-			$local_avatars[$size] = home_url( $local_avatars[$size] );
 		}
-
-		if ( is_ssl() ) {
-			$local_avatars[ $size ] = str_replace( 'http', 'https', $local_avatars[ $size ] );
-		}
-
-		$author_class = is_author( $user_id ) ? ' current-author' : '' ;
-		$avatar       = "<img alt='" . esc_attr( $alt ) . "' src='" . $local_avatars[$size] . "' class='avatar avatar-{$size}{$author_class} photo' height='{$size}' width='{$size}' />";
-
-		return apply_filters( 'basic_user_avatar', $avatar, $user_id );
+	}
+	else { // no user ID
+		return $avatar;
 	}
 
-	/**
-	 * Form to display on the user profile edit screen
-	 *
-	 * @since 1.0.0
-	 * @param object $profileuser
-	 * @return
-	 */
-	public function edit_user_profile( $profileuser ) {
+	$local_avatars = get_user_meta( $user_id, 'upload_user_avatar', true );
 
-		// bbPress will try to auto-add this to user profiles - don't let it.
-		// Instead we hook our own proper function that displays cleaner.
-		if ( function_exists( 'is_bbpress') && is_bbpress() )
-			return;
-		?>
+	if ( empty( $local_avatars ) || empty( $local_avatars['full'] ) ) {
+		return $avatar;
+	}
 
-		<h3><?php _e( 'Avatar', 'basic-user-avatars' ); ?></h3>
-		<table class="form-table">
-			<tr>
-				<th><label for="basic-user-avatar"><?php _e( 'Upload Avatar', 'basic-user-avatars' ); ?></label></th>
-				<td style="width: 50px;" valign="top">
-					<?php echo get_avatar( $profileuser->ID ); ?>
-				</td>
-				<td>
-				<?php
-				$options = get_option( 'basic_user_avatars_caps' );
-				if ( empty( $options['basic_user_avatars_caps'] ) || current_user_can( 'upload_files' ) ) {
-					// Nonce security ftw
-					wp_nonce_field( 'basic_user_avatar_nonce', '_basic_user_avatar_nonce', false );
+	# Generate a new size
+	$size = (int) $size;
+
+	if ( ! array_key_exists( $size, $local_avatars ) ) {
+		$local_avatars[$size] = $local_avatars['full']; // in case of failure elsewhere
+
+		$upload_path = wp_upload_dir();
+
+		# Get path for image by converting URL
+		$avatar_full_path = str_replace( $upload_path['baseurl'], $upload_path['basedir'], $local_avatars['full'] );
+
+		# Generate the new size
+		$editor = wp_get_image_editor( $avatar_full_path );
+		if ( ! is_wp_error( $editor ) ) {
+			$resized = $editor->resize( $size, $size, true );
+			if ( ! is_wp_error( $resized ) ) {
+				$dest_file = $editor->generate_filename();
+				$saved = $editor->save( $dest_file );
+				if ( ! is_wp_error( $saved ) ) {
+					$local_avatars[$size] = str_replace( $upload_path['basedir'], $upload_path['baseurl'], $dest_file );
+				}
+			}
+		}
+
+		# Save updated avatar sizes
+		update_user_meta( $user_id, 'upload_user_avatar', $local_avatars );
+	}
+
+	if ( substr( $local_avatars[$size], 0, 4 ) !== 'http' ) {
+		$local_avatars[$size] = home_url( $local_avatars[$size] );
+	}
+
+	if ( empty( $alt ) ) {
+		$alt = get_the_author_meta( 'display_name', $user_id );
+	}
+
+	$author_class = is_author( $user_id ) ? ' current-author' : '' ;
+	$avatar = '<img alt="' . esc_attr( $alt ) . '" src="' . set_url_scheme($local_avatars[$size] ) . '" class="avatar avatar-' . $size . $author_class . ' photo" height="' . $size . '" width="' . $size . '" />';
+
+	return apply_filters( 'upload_user_avatar', $avatar );
+}
+add_filter( 'get_avatar', 'kts_get_avatar', 10, 5 );
+
+/**
+ * Form to display on the user profile edit screen
+ */
+function kts_avatar_user_profile( $user ) { ?>
+
+	<h3><?php _e( 'Avatar', 'upload-user-avatars' ); ?></h3>
+	<table class="form-table">
+		<tr>
+			<th><label for="upload-user-avatar"><?php _e( 'Upload Avatar', 'upload-user-avatars' ); ?></label></th>
+			<td style="width: 50px;" valign="top">
+				<?php echo get_avatar( $user->ID ); ?>
+			</td>
+			<td> <?php
+
+			$caps = get_option( 'upload_user_avatars_caps' );
+			$avatar = get_user_meta( $user->ID, 'upload_user_avatar', true );
+
+			if ( empty( $caps ) || current_user_can( 'upload_files' ) ) {
+
+				# Nonce security
+				wp_nonce_field( 'upload_user_avatar_nonce', '_upload_user_avatar_nonce', false );
 					
-					// File upload input
-					echo '<input type="file" name="basic-user-avatar" id="basic-local-avatar" /><br />';
+				# File upload input
+				echo '<input type="file" name="upload_user_avatar" id="upload-local-avatar" /><br />';
 
-					if ( empty( $profileuser->basic_user_avatar ) ) {
-						echo '<span class="description">' . __( 'No local avatar is set. Use the upload field to add a local avatar.', 'basic-user-avatars' ) . '</span>';
-					} else {
-						echo '<input type="checkbox" name="basic-user-avatar-erase" value="1" /> ' . __( 'Delete local avatar', 'basic-user-avatars' ) . '<br />';
-						echo '<span class="description">' . __( 'Replace the local avatar by uploading a new avatar, or erase the local avatar (falling back to a gravatar) by checking the delete option.', 'basic-user-avatars' ) . '</span>';
-					}
-
-				} else {
-					if ( empty( $profileuser->basic_user_avatar ) ) {
-						echo '<span class="description">' . __( 'No local avatar is set. Set up your avatar at Gravatar.com.', 'basic-user-avatars' ) . '</span>';
-					} else {
-						echo '<span class="description">' . __( 'You do not have media management permissions. To change your local avatar, contact the site administrator.', 'basic-user-avatars' ) . '</span>';
-					}	
+				if ( empty( $avatar ) ) {
+					echo '<p class="description">' . __( 'You currently have no photo or avatar. Use the button above to upload one, and then click Update Profile.', 'upload-user-avatars' ) . '</p>';
 				}
-				?>
-				</td>
-			</tr>
-		</table>
-		<script type="text/javascript">var form = document.getElementById('your-profile');form.encoding = 'multipart/form-data';form.setAttribute('enctype', 'multipart/form-data');</script>
-		<?php
-	}
-
-	/**
-	 * Update the user's avatar setting
-	 *
-	 * @since 1.0.0
-	 * @param int $user_id
-	 */
-	public function edit_user_profile_update( $user_id ) {
-
-		// Check for nonce otherwise bail
-		if ( ! isset( $_POST['_basic_user_avatar_nonce'] ) || ! wp_verify_nonce( $_POST['_basic_user_avatar_nonce'], 'basic_user_avatar_nonce' ) )
-			return;
-
-		if ( ! empty( $_FILES['basic-user-avatar']['name'] ) ) {
-
-			// Allowed file extensions/types
-			$mimes = array(
-				'jpg|jpeg|jpe' => 'image/jpeg',
-				'gif'          => 'image/gif',
-				'png'          => 'image/png',
-			);
-
-			// Front end support - shortcode, bbPress, etc
-			if ( ! function_exists( 'wp_handle_upload' ) )
-				require_once ABSPATH . 'wp-admin/includes/file.php';
-
-			// Delete old images if successful
-			$this->avatar_delete( $user_id );
-
-			// Need to be more secure since low privelege users can upload
-			if ( strstr( $_FILES['basic-user-avatar']['name'], '.php' ) )
-				wp_die( 'For security reasons, the extension ".php" cannot be in your file name.' );
-
-			// Make user_id known to unique_filename_callback function
-			$this->user_id_being_edited = $user_id; 
-			$avatar = wp_handle_upload( $_FILES['basic-user-avatar'], array( 'mimes' => $mimes, 'test_form' => false, 'unique_filename_callback' => array( $this, 'unique_filename_callback' ) ) );
-
-			// Handle failures
-			if ( empty( $avatar['file'] ) ) {  
-				switch ( $avatar['error'] ) {
-				case 'File type does not meet security guidelines. Try another.' :
-					add_action( 'user_profile_update_errors', create_function( '$a', '$a->add("avatar_error",__("Please upload a valid image file for the avatar.","basic-user-avatars"));' ) );
-					break;
-				default :
-					add_action( 'user_profile_update_errors', create_function( '$a', '$a->add("avatar_error","<strong>".__("There was an error uploading the avatar:","basic-user-avatars")."</strong> ' . esc_attr( $avatar['error'] ) . '");' ) );
+				else {
+					echo '<p><input type="checkbox" name="upload_user_avatar_erase" value="1" /> ' . __( 'Delete current image', 'upload-user-avatars' ) . '</p>';
+					echo '<p class="description">' . __( 'Update your photo or avatar, or check the box above to delete your current one, and then click Update Profile.', 'upload-user-avatars' ) . '</p>';
 				}
-				return;
+
 			}
-
-			// Save user information (overwriting previous)
-			update_user_meta( $user_id, 'basic_user_avatar', array( 'full' => $avatar['url'] ) );
-
-		} elseif ( ! empty( $_POST['basic-user-avatar-erase'] ) ) {
-			// Nuke the current avatar
-			$this->avatar_delete( $user_id );
-		}
-	}
-
-	/**
-	 * Enable avatar management on the frontend via this shortocde.
-	 *
-	 * @since 1.0.0
-	 */
-	function shortcode() {
-
-		// Don't bother if the user isn't logged in
-		if ( ! is_user_logged_in() )
-			return;
-
-		$user_id     = get_current_user_id();
-		$profileuser = get_userdata( $user_id );
-
-		if ( isset( $_POST['manage_avatar_submit'] ) ){
-			$this->edit_user_profile_update( $user_id );
-		}
-
-		ob_start();
-		?>
-		<form id="basic-user-avatar-form" action="<?php the_permalink(); ?>" method="post" enctype="multipart/form-data">
-			<?php
-			echo get_avatar( $profileuser->ID );
-
-			$options = get_option( 'basic_user_avatars_caps' );
-			if ( empty( $options['basic_user_avatars_caps'] ) || current_user_can( 'upload_files' ) ) {
-				// Nonce security ftw
-				wp_nonce_field( 'basic_user_avatar_nonce', '_basic_user_avatar_nonce', false );
-				
-				// File upload input
-				echo '<p><input type="file" name="basic-user-avatar" id="basic-local-avatar" /></p>';
-
-				if ( empty( $profileuser->basic_user_avatar ) ) {
-					echo '<p class="description">' . __( 'No local avatar is set. Use the upload field to add a local avatar.', 'basic-user-avatars' ) . '</p>';
-				} else {
-					echo '<input type="checkbox" name="basic-user-avatar-erase" value="1" /> ' . __( 'Delete local avatar', 'basic-user-avatars' ) . '<br />';
-					echo '<p class="description">' . __( 'Replace the local avatar by uploading a new avatar, or erase the local avatar (falling back to a gravatar) by checking the delete option.', 'basic-user-avatars' ) . '</p>';
+			else {
+				if ( empty( $avatar ) ) {
+					echo '<p class="description">' . __( 'No avatar has been uploaded.', 'upload-user-avatars' ) . '</p>';
 				}
-
-			} else {
-				if ( empty( $profileuser->basic_user_avatar ) ) {
-					echo '<p class="description">' . __( 'No local avatar is set. Set up your avatar at Gravatar.com.', 'basic-user-avatars' ) . '</p>';
-				} else {
-					echo '<p class="description">' . __( 'You do not have media management permissions. To change your local avatar, contact the site administrator.', 'basic-user-avatars' ) . '</p>';
+				else {
+					echo '<p class="description">' . __( 'You do not have the appropriate media management permissions to change your avatar here.</p><p class="description">To change your avatar, contact the site administrator.', 'upload-user-avatars' ) . '</p>';
 				}	
 			}
 			?>
-			<input type="submit" name="manage_avatar_submit" value="<?php _e( 'Update Avatar', 'basic-user-avatars' ); ?>" />
-		</form>
-		<?php
-		return ob_get_clean();
+			</td>
+		</tr>
+	</table>
+	<script>
+		var form = document.getElementById('your-profile');
+		form.encoding = 'multipart/form-data';
+		form.setAttribute('enctype', 'multipart/form-data');
+	</script> <?php
+}
+add_action( 'show_user_profile', 'kts_avatar_user_profile' );
+add_action( 'edit_user_profile', 'kts_avatar_user_profile' );
+
+/**
+ * Update the user's avatar setting
+ */
+function kts_avatar_user_profile_update( $user_id ) {
+	# Check for nonce
+	if ( ! isset( $_POST['_upload_user_avatar_nonce'] ) || ! wp_verify_nonce( $_POST['_upload_user_avatar_nonce'], 'upload_user_avatar_nonce' ) ) {
+		return;
 	}
 
-	/**
-	 * Form to display on the bbPress user profile edit screen
-	 *
-	 * @since 1.0.0
-	 */
-	public function bbpress_user_profile() {
+	if ( ! empty( $_FILES['upload_user_avatar']['name'] ) ) {
+		# Allowed file extensions/types
+		$mimes = array(
+			'jpg|jpeg|jpe' => 'image/jpeg',
+			'gif'          => 'image/gif',
+			'png'          => 'image/png',
+		);
 
-		if ( !bbp_is_user_home_edit() )
-			return;
+		# Front end support - shortcode
+		if ( ! function_exists( 'wp_handle_upload' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
 
-		$user_id     = get_current_user_id();
-		$profileuser = get_userdata( $user_id );
+		# Enable change of folder to which avatars are uploaded
+		add_filter( 'upload_dir', 'kts_avatar_change_upload_dir' );
 
-		echo '<div>';
-			echo '<label for="basic-local-avatar">' . __( 'Avatar', 'basic-user-avatars' ) . '</label>';
- 			echo '<fieldset class="bbp-form avatar">';
+		# Delete all sizes of previous avatar
+		kts_avatar_delete( $user_id );
 
-	 			echo get_avatar( $profileuser->ID );
-				$options = get_option( 'basic_user_avatars_caps' );
-				if ( empty( $options['basic_user_avatars_caps'] ) || current_user_can( 'upload_files' ) ) {
-					// Nonce security ftw
-					wp_nonce_field( 'basic_user_avatar_nonce', '_basic_user_avatar_nonce', false );
-					
-					// File upload input
-					echo '<br /><input type="file" name="basic-user-avatar" id="basic-local-avatar" /><br />';
+		# Need to be more secure because low privilege users can upload
+		if ( strstr( $_FILES['upload_user_avatar']['name'], '.php' ) ) {
+			wp_die( 'For security reasons, files with the ".php" extension cannot be uploaded.' );
+		}
 
-					if ( empty( $profileuser->basic_user_avatar ) ) {
-						echo '<span class="description" style="margin-left:0;">' . __( 'No local avatar is set. Use the upload field to add a local avatar.', 'basic-user-avatars' ) . '</span>';
-					} else {
-						echo '<input type="checkbox" name="basic-user-avatar-erase" value="1" style="width:auto" /> ' . __( 'Delete local avatar', 'basic-user-avatars' ) . '<br />';
-						echo '<span class="description" style="margin-left:0;">' . __( 'Replace the local avatar by uploading a new avatar, or erase the local avatar (falling back to a gravatar) by checking the delete option.', 'basic-user-avatars' ) . '</span>';
-					}
+		$avatar = wp_handle_upload( $_FILES['upload_user_avatar'], array(
+			'mimes' => $mimes,
+			'test_form' => false,
+			'unique_filename_callback' => function( $dir, $name, $ext ) use( $user_id ) { // pass $user_id variable to anonymous function
+				$user = get_user_by( 'id', $user_id );
+				$name = $base_name = sanitize_file_name( $user->display_name . '_avatar' );
+				$number = 1;
 
-				} else {
-					if ( empty( $profileuser->basic_user_avatar ) ) {
-						echo '<span class="description" style="margin-left:0;">' . __( 'No local avatar is set. Set up your avatar at Gravatar.com.', 'basic-user-avatars' ) . '</span>';
-					} else {
-						echo '<span class="description" style="margin-left:0;">' . __( 'You do not have media management permissions. To change your local avatar, contact the site administrator.', 'basic-user-avatars' ) . '</span>';
-					}	
+				while ( file_exists( $dir . '/' . $name . $ext ) ) {
+					$name = $base_name . '_' . $number;
+					$number++;
 				}
 
-			echo '</fieldset>';
-		echo '</div>';
-		?>
-		<script type="text/javascript">var form = document.getElementById('bbp-your-profile');form.encoding = 'multipart/form-data';form.setAttribute('enctype', 'multipart/form-data');</script>
-		<?php
-	}
+				return $name . $ext;
+			}
+		) );
 
-	/**
-	 * Remove the custom get_avatar hook for the default avatar list output on 
-	 * the Discussion Settings page.
-	 *
-	 * @since 1.0.0
-	 * @param array $avatar_defaults
-	 * @return array
-	 */
-	public function avatar_defaults( $avatar_defaults ) {
-		remove_action( 'get_avatar', array( $this, 'get_avatar' ) );
-		return $avatar_defaults;
-	}
-
-	/**
-	 * Delete avatars based on user_id
-	 *
-	 * @since 1.0.0
-	 * @param int $user_id
-	 */
-	public function avatar_delete( $user_id ) {
-		$old_avatars = get_user_meta( $user_id, 'basic_user_avatar', true );
-		$upload_path = wp_upload_dir();
-
-		if ( is_array( $old_avatars ) ) {
-			foreach ( $old_avatars as $old_avatar ) {
-				$old_avatar_path = str_replace( $upload_path['baseurl'], $upload_path['basedir'], $old_avatar );
-				@unlink( $old_avatar_path );
+		# Handle failures
+		if ( empty( $avatar['file'] ) && $avatar['error'] ) {
+			if ( is_admin() ) {
+				add_action( 'user_profile_update_errors', function( $errors ) use ( $avatar ) { // pass $avatar variable
+					return $errors->add( 'avatar_error', '<strong>' . __( 'An error occurred while attempting to upload the file.', 'upload-user-avatars' ) . '</strong> ' . $avatar['error'] );
+				} );
+				return;
+			}
+			else {
+				echo '<p class="red">' . __( 'An error occurred while attempting to upload the file.', 'upload-user-avatars' ) . ' ' . $avatar['error'] . __( ' An upload must be a .jpg, .jpeg, .gif, or .png file.', 'upload-user-avatars' ) . '</p>';
 			}
 		}
 
-		delete_user_meta( $user_id, 'basic_user_avatar' );
-	}
-
-	/**
-	 * File names are magic
-	 *
-	 * @since 1.0.0
-	 * @param string $dir
-	 * @param string $name
-	 * @param string $ext
-	 * @return string
-	 */
-	public function unique_filename_callback( $dir, $name, $ext ) {
-		$user = get_user_by( 'id', (int) $this->user_id_being_edited );
-		$name = $base_name = sanitize_file_name( $user->display_name . '_avatar' );
-		$number = 1;
-
-		while ( file_exists( $dir . "/$name$ext" ) ) {
-			$name = $base_name . '_' . $number;
-			$number++;
+		# Save user information (overwriting previous)
+		if ( isset( $avatar['url'] ) ) {
+			update_user_meta( $user_id, 'upload_user_avatar', array( 'full' => $avatar['url'] ) );
 		}
 
-		return $name . $ext;
+	}
+	else if ( ! empty( $_POST['upload_user_avatar_erase'] ) ) {
+		# Delete the current avatar
+		kts_avatar_delete( $user_id );
 	}
 }
-$basic_user_avatars = new basic_user_avatars;
+add_action( 'personal_options_update', 'kts_avatar_user_profile_update' );
+add_action( 'edit_user_profile_update', 'kts_avatar_user_profile_update' );
 
 /**
- * During uninstallation, remove the custom field from the users and delete the local avatars
- *
- * @since 1.0.0
+ * Enable avatar management on the frontend via this shortocde
  */
-function basic_user_avatars_uninstall() {
-	$basic_user_avatars = new basic_user_avatars;
-	$users = get_users_of_blog();
+function kts_avatar_shortcode() {
+	if ( ! is_user_logged_in() ) {
+		return; // do nothing if not logged in
+	}
 
-	foreach ( $users as $user )
-		$basic_user_avatars->avatar_delete( $user->user_id );
+	$user_id = get_current_user_id();
+	$avatar = get_user_meta( $user_id, 'upload_user_avatar', true );
 
-	delete_option( 'basic_user_avatars_caps' );
+	if ( isset( $_POST['manage_avatar_submit'] ) ) {
+		kts_avatar_user_profile_update( $user_id );
+	}
+
+	ob_start(); ?>
+
+	<form id="upload-user-avatar-form" action="<?php the_permalink(); ?>" method="post" enctype="multipart/form-data"> <?php
+
+		echo get_avatar( $user_id );
+
+		$caps = get_option( 'upload_user_avatars_caps' );
+		if ( empty( $caps ) || current_user_can( 'upload_files' ) ) {
+
+			# Nonce security
+			wp_nonce_field( 'upload_user_avatar_nonce', '_upload_user_avatar_nonce', false );
+				
+			# File upload input
+			echo '<p><input type="file" name="upload_user_avatar" id="upload-local-avatar" /></p>';
+
+			if ( empty( $avatar ) ) {
+				echo '<p class="description">' . __( 'You currently have no photo or avatar. Use the button above to upload one, and then click Update.', 'upload-user-avatars' ) . '</p>';
+			}
+			else {
+				echo '<p><input type="checkbox" name="upload_user_avatar_erase" value="1" /> ' . __( 'Delete current image', 'upload-user-avatars' ) . '</p>';
+				echo '<p class="description">' . __( 'Update your photo or avatar, or check the box above to delete your current one, and then click Update.', 'upload-user-avatars' ) . '</p>';
+			}
+		}
+		else {
+			if ( empty( $avatar ) ) {
+				echo '<p class="description">' . __( 'No avatar has been uploaded.', 'upload-user-avatars' ) . '</p>';
+			}
+			else {
+				echo '<p class="description">' . __( 'You do not have the appropriate media management permissions to change your avatar here.</p><p class="description">To change your avatar, contact the site administrator.', 'upload-user-avatars' ) . '</p>';
+			}	
+		} ?>
+
+		<input type="submit" name="manage_avatar_submit" value="<?php _e( 'Update', 'upload-user-avatars' ); ?>" />
+	</form> <?php
+
+	return ob_get_clean();
 }
-register_uninstall_hook( __FILE__, 'basic_user_avatars_uninstall' );
+add_shortcode( 'upload-user-avatars', 'kts_avatar_shortcode' );
+
+/**
+ * Remove the custom get_avatar hook for the default avatar list output on 
+ * the Discussion Settings page
+ */
+function kts_avatar_defaults( $avatar_defaults ) {
+	remove_action( 'get_avatar', 'kts_get_avatar' );
+	return $avatar_defaults;
+}
+add_action( 'avatar_defaults', 'kts_avatar_defaults' );
+
+/**
+ * Delete a user's avatar
+ */
+function kts_avatar_delete( $user_id ) {
+	$old_avatars = get_user_meta( $user_id, 'upload_user_avatar', true );
+	$upload_path = wp_upload_dir();
+
+	if ( is_array( $old_avatars ) && ! empty( $old_avatars['full'] ) ) {
+
+		# Get path to avatar uploaded via this plugin
+		$old_avatar_path = str_replace( $upload_path['baseurl'], $upload_path['basedir'], $old_avatars['full'] );
+
+		# Remove file extension from path to avatar files
+		$ext = pathinfo( $old_avatar_path, PATHINFO_EXTENSION );
+		$avatar_sizes = str_replace( '.' . $ext, '', $old_avatar_path );
+
+		# Get directory where avatars stored
+		$user = get_user_by( 'id', $user_id );
+		$name = sanitize_file_name( $user->display_name . '_avatar' );
+		$avatar_directory = str_replace( $name . '.' . $ext, '', $old_avatar_path );
+
+		# Delete every size of avatar for this user
+		foreach( glob( $avatar_directory . '*.*' ) as $file ) {
+			$pos = strpos( $file, $avatar_sizes );
+			if ( $pos !== false ) {
+				wp_delete_file( $file );
+			}
+		}
+	}
+	delete_user_meta( $user_id, 'upload_user_avatar' );
+}
