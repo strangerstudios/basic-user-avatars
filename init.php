@@ -232,7 +232,7 @@ class basic_user_avatars {
 					if ( empty( $profileuser->basic_user_avatar ) ) {
 						echo '<span class="description">' . esc_html__( 'No local avatar is set. Use the upload field to add a local avatar.', 'basic-user-avatars' ) . '</span>';
 					} else {
-						echo '<input type="checkbox" name="basic-user-avatar-erase" value="1" /> ' . esc_html__( 'Delete local avatar', 'basic-user-avatars' ) . '<br />';
+						echo '<input type="checkbox" name="basic-user-avatar-erase" id="basic-user-avatar-erase" value="1" /><label for="basic-user-avatar-erase">' . esc_html__( 'Delete local avatar', 'basic-user-avatars' ) . '</label><br />';
 						echo '<span class="description">' . esc_html__( 'Replace the local avatar by uploading a new avatar, or erase the local avatar (falling back to a gravatar) by checking the delete option.', 'basic-user-avatars' ) . '</span>';
 					}
 

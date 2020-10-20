@@ -1,9 +1,9 @@
 === Basic User Avatars ===
-Contributors: jaredatch
+Contributors: jaredatch, strangerstudios
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AD8KTWTTDX9JL
 Tags: avatar, gravatar, bbpress, profiles
 Requires at least: 4.0
-Tested up to: 4.2
+Tested up to: 5.5
 Stable tag: trunk
  
 Adds an avatar upload field to user profiles. Front-end support. bbPress support.
@@ -48,19 +48,23 @@ If things are still not functioning properly then proceed to reporting an issue.
 1. Option on the bbPress user profile edit page. 
 
 == Changelog ==
+= 1.0.4 - TBA =
+* BUG FIX: Fixed typos on readme.txt - Thanks @fred-pedro
+* ENHANCEMENT: Added translation for Spanish - Thanks @ricardpriet
+* ENHANCEMENT: Added translation for Brazilian Portuguese - Thanks @allysonsouza
+* ENHANCEMENT: Added translation for Catalan - Thanks @alvaromartinezmajado
+* ENHANCEMENT: Added proper SSL support - Thanks @zachwills
+* ENHANCEMENT: Escaped strings.
 
-= 1.0.4 (Unreleased)
-* Added proper SSL support - props zachwills
+= 1.0.3 - 2015-08-05 =
+* ENHANCEMENT: Added Swedish and Finnish translations - Thanks @dmaester
 
-= 1.0.3 (5/8/2015)
-* Added Swedish and Finnish translations - props dmaester
+= 1.0.2 - 2015-04-17 =
+* ENHANCEMENT: Added POT file for translation
 
-= 1.0.2 (4/17/2015)
-* Added POT file for translation
-
-= 1.0.1 (3/17/2015)
-* Updated textdomain for better support
-* Added plugin to GitHub for better collaboration
+= 1.0.1 - 2015-03-17 =
+* BUG FIX: Updated textdomain for better support
+* ENHANCEMENT: Added plugin to GitHub for better collaboration
 
 = 1.0.0 =
 * Initial launch, should be considered beta. Use with caution.
