@@ -37,9 +37,9 @@ Shortcode for front-end support is `[basic-user-avatars]`.
 
 While this plugin has been tested with common server setups, some enviroments could cause an issue.
 
-If you are having a problem deactivate all plugins other than this one and then switch you theme to TwentyTweleve (or similar). If things then work, then the issue is with a 3rd party theme or plugin.
+If you are having a problem deactivate all plugins other than this one and then switch your theme to TwentyTweleve (or similar). If things work, then the issue is with a 3rd party theme or plugin.
 
-If things are still not functioning incorrectly then proceed to reporting an issue. The ideal method is via [GitHub issues](https://github.com/jaredatch/basic-user-avatars/issues/).
+If things are still not functioning properly then proceed to reporting an issue. The ideal method is via [GitHub issues](https://github.com/jaredatch/basic-user-avatars/issues/).
 
 == Screenshots ==
 
