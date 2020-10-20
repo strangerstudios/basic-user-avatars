@@ -28,7 +28,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with WP Forms. If not, see <http://www.gnu.org/licenses/>.
+ * along with Basic User Avatars. If not, see <http://www.gnu.org/licenses/>.
  *
  * @author     Jared Atchison
  * @version    1.0.3
