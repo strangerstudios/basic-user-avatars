@@ -212,7 +212,7 @@ class basic_user_avatars {
 			return;
 		?>
 
-		<h3><?php _e( 'Avatar', 'basic-user-avatars' ); ?></h3>
+		<h2><?php _e( 'Avatar', 'basic-user-avatars' ); ?></h2>
 		<table class="form-table">
 			<tr>
 				<th><label for="basic-user-avatar"><?php esc_html_e( 'Upload Avatar', 'basic-user-avatars' ); ?></label></th>
