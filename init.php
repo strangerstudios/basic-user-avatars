@@ -291,10 +291,14 @@ class basic_user_avatars {
 			if ( empty( $avatar['file'] ) ) {  
 				switch ( $avatar['error'] ) {
 				case 'File type does not meet security guidelines. Try another.' :
-					add_action( 'user_profile_update_errors', create_function( '$a', '$a->add("avatar_error",esc_html__("Please upload a valid image file for the avatar.","basic-user-avatars"));' ) );
+					add_action( 'user_profile_update_errors', function( $error = 'avatar_error' ){
+						esc_html__("Please upload a valid image file for the avatar.","basic-user-avatars");
+					} );
 					break;
 				default :
-					add_action( 'user_profile_update_errors', create_function( '$a', '$a->add("avatar_error","<strong>".esc_html__("There was an error uploading the avatar:","basic-user-avatars")."</strong> ' . esc_attr( $avatar['error'] ) . '");' ) );
+					add_action( 'user_profile_update_errors', function( $error = 'avatar_error' ){
+						"<strong>".esc_html__("There was an error uploading the avatar:","basic-user-avatars")."</strong> ". esc_attr( $avatar['error'] );
+					} );
 				}
 				return;
 			}
@@ -473,7 +477,7 @@ $basic_user_avatars = new basic_user_avatars;
  */
 function basic_user_avatars_uninstall() {
 	$basic_user_avatars = new basic_user_avatars;
-	$users = get_users_of_blog();
+	$users = get_users();
 
 	foreach ( $users as $user )
 		$basic_user_avatars->avatar_delete( $user->user_id );
