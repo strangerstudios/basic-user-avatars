@@ -188,7 +188,7 @@ class basic_user_avatars {
 		}
 
 		if ( is_ssl() ) {
-			$local_avatars[ $size ] = str_replace( 'http', 'https', $local_avatars[ $size ] );
+			$local_avatars[ $size ] = str_replace( 'http:', 'https:', $local_avatars[ $size ] );
 		}
 
 		$author_class = is_author( $user_id ) ? ' current-author' : '' ;
