@@ -1,8 +1,7 @@
 === Basic User Avatars ===
-Contributors: jaredatch, strangerstudios
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AD8KTWTTDX9JL
+Contributors: strangerstudios, jaredatch
 Tags: avatar, gravatar, bbpress, profiles
-Requires at least: 4.0
+Requires at least: 4.5
 Tested up to: 5.5
 Stable tag: trunk
  
@@ -16,7 +15,7 @@ Provides a plugin for front-end avatar management for sites that what to keep us
 
 Automatically adds avatar support to bbPress (2.3+) user profiles if bbPress is activated.
 
-**[This plugin is on GitHub!](https://github.com/jaredatch/basic-user-avatars/)** Pull requests are welcome. If possible please report issues throug Github.
+**[This plugin is on GitHub!](https://github.com/strangerstudios/basic-user-avatars/)** Pull requests are welcome. If possible please report issues throug Github.
 
 Note: This plugin is a fork of Simple Local Avatars v1.3.1 by Jake Goldman (10up). If you want snazzy ajax and some other nifty features, check out [Simple Local Avatars 2.x](http://wordpress.org/plugins/simple-local-avatars).
 
@@ -39,7 +38,7 @@ While this plugin has been tested with common server setups, some enviroments co
 
 If you are having a problem deactivate all plugins other than this one and then switch your theme to TwentyTweleve (or similar). If things work, then the issue is with a 3rd party theme or plugin.
 
-If things are still not functioning properly then proceed to reporting an issue. The ideal method is via [GitHub issues](https://github.com/jaredatch/basic-user-avatars/issues/).
+If things are still not functioning properly then proceed to reporting an issue. The ideal method is via [GitHub issues](https://github.com/strangerstudios/basic-user-avatars/issues/).
 
 == Screenshots ==
 

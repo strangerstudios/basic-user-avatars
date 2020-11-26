@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Basic User Avatars
- * Plugin URI:  http://wordpress.org/extend/basic-user-avatars
+ * Plugin URI:  https://wordpress.org/plugins/basic-user-avatars/
  * Description: Adds an avatar upload field to user profiles. Also provides front-end avatar management via a shortcode and bbPress support. No frills. Fork of Simple Local Avatars 1.3.
- * Version:     1.0.3
- * Author:      Jared Atchison
- * Author URI:  http://jaredatchison.com
+ * Version:     1.0.4
+ * Author:      Stranger Studios
+ * Author URI:  https://www.strangerstudios.com/
  *
  * ---------------------------------------------------------------------------//
  * This plugin is a fork of Simple Local Avatars v1.3.1 by Jake Goldman (10up).
@@ -30,11 +30,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Basic User Avatars. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author     Jared Atchison
- * @version    1.0.3
+ * @author     Stranger Studios
+ * @version    1.0.4
  * @package    JA_BasicLocalAvatars
- * @copyright  Copyright (c) 2015, Jared Atchison
- * @link       http://jaredatchison.com
+ * @copyright  Copyright (c) 2015, Jared Atchison, 2020 Stranger Studios
+ * @link       https://www.strangerstudios.com/
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
