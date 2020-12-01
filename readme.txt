@@ -47,7 +47,7 @@ If things are still not functioning properly then proceed to reporting an issue.
 1. Option on the bbPress user profile edit page. 
 
 == Changelog ==
-= 1.0.4 - TBA =
+= 1.0.4 - 2020-01-12 =
 * BUG FIX: Fixed typos on readme.txt - Thanks @fred-pedro
 * ENHANCEMENT: Added translation for Spanish - Thanks @ricardpriet
 * ENHANCEMENT: Added translation for Brazilian Portuguese - Thanks @allysonsouza
