@@ -12,6 +12,7 @@ jQuery(document).ready(function() {
                 if(responseHTML.indexOf('[done]') > -1) {
                     jQuery('#basic_user_avatars_updates_intro').html('Migration complete.');
                 } else {
+                    jQuery('#basic_user_avatars_updates_intro').append(responseHTML);
                     $update_timer = setTimeout(function() { migrate_from_wp_user_avatar();}, 200);
                 }
             }

@@ -580,13 +580,15 @@ class basic_user_avatars {
 
 		if ( empty( $users_to_migrate ) ) {
 			echo '[done]';
+		} else {
+			echo ' .';
 		}
 
 		foreach ( $users_to_migrate as $user ) {
 			// Get the existing avatar media ID.
 			$avatar_id = get_user_meta( $user->ID, $wpdb->get_blog_prefix() . 'user_avatar', true );
 			$avatar_url = wp_get_attachment_url( intval( $avatar_id ) );
-			update_user_meta( $user->ID, 'basic_user_avatar', array( 'full' => $avatar_url ) );
+			//update_user_meta( $user->ID, 'basic_user_avatar', array( 'full' => $avatar_url ) );
 		}
 
 		exit;
