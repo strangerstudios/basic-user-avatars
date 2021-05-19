@@ -72,6 +72,12 @@ class basic_user_avatars {
 		// Filters
 		add_filter( 'get_avatar',                array( $this, 'get_avatar'               ), 10, 5 );
 		add_filter( 'avatar_defaults',           array( $this, 'avatar_defaults'          )        );
+
+		// Migrate from WP User Avatar
+		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		add_action( 'wp_ajax_basic_user_avatars_wp_user_avatar_migrate', array( $this, 'wp_ajax_basic_user_avatars_wp_user_avatar_migrate' ) );
 	}
 
 	/**
@@ -466,6 +472,124 @@ class basic_user_avatars {
 		}
 
 		return $name . $ext;
+	}
+
+	public function admin_notices() {
+		global $wpdb;
+
+		// Was this notice already dismissed?
+		$swsales_migration_notice_dismissed = get_option( 'basic_user_avatars_wp_user_avatar_notification_dismissed', 0 );
+		if ( $swsales_migration_notice_dismissed || ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] === 'basic_user_avatars_wp_user_avatar_migrate' ) ) {
+			return;
+		} elseif ( ! empty($_REQUEST['basic_user_avatars_wp_user_avatar_notification_dismissed'] ) && current_user_can( 'manage_options' ) ) {
+			update_option('basic_user_avatars_wp_user_avatar_notification_dismissed', 1, 'no');
+			return;
+		}
+
+		// Grab all users that have a local avatar.
+		$user_avatar_check = get_users( array(
+			'meta_query' => array(
+				'relation' => 'AND',
+				array(
+					'key'     => $wpdb->get_blog_prefix() . 'user_avatar',
+					'compare' => 'EXISTS',
+				),
+				array(
+					'key'     => 'basic_user_avatar',
+					'compare' => 'NOT EXISTS',
+				),
+			),
+			'number' => 1
+		) );
+
+		if ( empty( $user_avatar_check ) ) {
+			return;
+		}
+
+		?>
+		<div class="notice notice-warning">
+			<p><?php _e( 'We notice that there are avatars from the WP User Avatar plugin on your site. Would you like to migrate these avatars to use with Basic User Avatars?', 'basic-user-avatars' ); ?></p>
+			<p class="submit">
+					<a href="<?php echo admin_url('admin.php?page=basic_user_avatars_wp_user_avatar_migrate'); ?>" class="button-primary">
+						<?php esc_html_e( 'Migrate Avatars From The WP User Avatar Plugin', 'basic-user-avatars' ); ?>
+					</a>
+					<a href="<?php echo add_query_arg('basic_user_avatars_wp_user_avatar_notification_dismissed', '1', $_SERVER['REQUEST_URI']);?>" class="button-secondary">
+						<?php esc_html_e( 'Dismiss This Notice', 'basic-user-avatars' ); ?>
+					</a>
+				</p>
+		</div>
+		<?php
+	}
+
+	public function admin_menu() {
+		add_submenu_page( 
+			null,
+			'Migrate From WP User Avatar to Basic User Avatars',
+			'Migrate From WP User Avatar to Basic User Avatars',
+			'manage_options',
+			'basic_user_avatars_wp_user_avatar_migrate',
+			array( $this, 'page_basic_user_avatars_wp_user_avatar_migrate' ),
+		);
+	}
+
+	public function page_basic_user_avatars_wp_user_avatar_migrate() {
+		//only admins can get this
+		if ( ! function_exists("current_user_can") || ( ! current_user_can("manage_options") ))
+		{
+			die(__("You do not have permissions to perform this action.", 'basic-user-avatars' ));
+		}
+		
+		?>
+		<h2><?php _e('Migrating WP User Avatar data to Basic User Avatars', 'basic-user-avatars' );?></h2>
+
+		<p id="basic_user_avatars_updates_intro"><?php _e('Processing updates. Please do not leave page.', 'basic-user-avatars' );?></p>
+		
+		<?php
+	}
+
+	/*
+	Enqueue updates.js if needed
+	*/
+	function admin_enqueue_scripts() {
+		if( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'basic_user_avatars_wp_user_avatar_migrate') {
+			wp_enqueue_script( 'basic_user_avatars_wp_user_avatar_migrate', plugin_dir_url( __FILE__ ) . 'js/migrate-wp-user-avatar.js', array('jquery') );
+		}
+	}
+
+	/*
+	Load an update via AJAX
+	*/
+	function wp_ajax_basic_user_avatars_wp_user_avatar_migrate() {	
+		global $wpdb;
+	
+		// Grab some users that need to be migrated
+		$users_to_migrate = get_users( array(
+			'meta_query' => array(
+				'relation' => 'AND',
+				array(
+					'key'     => $wpdb->get_blog_prefix() . 'user_avatar',
+					'compare' => 'EXISTS',
+				),
+				array(
+					'key'     => 'basic_user_avatar',
+					'compare' => 'NOT EXISTS',
+				),
+			),
+			'number' => 20
+		) );
+
+		if ( empty( $users_to_migrate ) ) {
+			echo '[done]';
+		}
+
+		foreach ( $users_to_migrate as $user ) {
+			// Get the existing avatar media ID.
+			$avatar_id = get_user_meta( $user->ID, $wpdb->get_blog_prefix() . 'user_avatar', true );
+			$avatar_url = wp_get_attachment_url( intval( $avatar_id ) );
+			update_user_meta( $user->ID, 'basic_user_avatar', array( 'full' => $avatar_url ) );
+		}
+
+		exit;
 	}
 }
 $basic_user_avatars = new basic_user_avatars;
