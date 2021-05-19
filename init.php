@@ -3,7 +3,7 @@
  * Plugin Name: Basic User Avatars
  * Plugin URI:  https://wordpress.org/plugins/basic-user-avatars/
  * Description: Adds an avatar upload field to user profiles. Also provides front-end avatar management via a shortcode and bbPress support. No frills. Fork of Simple Local Avatars 1.3.
- * Version:     1.0.4
+ * Version:     1.0.5
  * Author:      Stranger Studios
  * Author URI:  https://www.strangerstudios.com/
  *
@@ -31,7 +31,7 @@
  * along with Basic User Avatars. If not, see <http://www.gnu.org/licenses/>.
  *
  * @author     Stranger Studios
- * @version    1.0.4
+ * @version    1.0.5
  * @package    JA_BasicLocalAvatars
  * @copyright  Copyright (c) 2015, Jared Atchison, 2020 Stranger Studios
  * @link       https://www.strangerstudios.com/
@@ -138,6 +138,7 @@ class basic_user_avatars {
 	 * @return string
 	 */
 	public function get_avatar( $avatar = '', $id_or_email, $size = 96, $default = '', $alt = false ) {
+		global $wpdb;
 
 		// Determine if we recive an ID or string
 		if ( is_numeric( $id_or_email ) )
@@ -152,8 +153,17 @@ class basic_user_avatars {
 
 		$local_avatars = get_user_meta( $user_id, 'basic_user_avatar', true );
 
-		if ( empty( $local_avatars ) || empty( $local_avatars['full'] ) )
-			return $avatar;
+		if ( empty( $local_avatars ) || empty( $local_avatars['full'] ) ) {
+			// Try to pull avatar from WP User Avatar.
+			$wp_user_avatar_id = get_user_meta( $user_id, $wpdb->get_blog_prefix() . 'user_avatar', true );
+			if ( ! empty( $wp_user_avatar_id ) ) {
+				$wp_user_avatar_url = wp_get_attachment_url( intval( $wp_user_avatar_id ) );
+				$local_avatars = array( 'full' => $wp_user_avatar_url );
+				update_user_meta( $user_id, 'basic_user_avatar', $local_avatars );
+			} else {
+				return $avatar;
+			}	
+		}
 
 		$size = (int) $size;
 
