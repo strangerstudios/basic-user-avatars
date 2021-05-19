@@ -549,7 +549,7 @@ class basic_user_avatars {
 	*/
 	function wp_ajax_basic_user_avatars_wp_user_avatar_migrate() {	
 		global $wpdb;
-	
+
 		// Grab some users that need to be migrated
 		$users_to_migrate = get_users( array(
 			'meta_query' => array(
@@ -563,7 +563,7 @@ class basic_user_avatars {
 					'compare' => 'NOT EXISTS',
 				),
 			),
-			'number' => 20
+			'number' => 100
 		) );
 
 		if ( empty( $users_to_migrate ) ) {
@@ -576,9 +576,9 @@ class basic_user_avatars {
 			// Get the existing avatar media ID.
 			$avatar_id = get_user_meta( $user->ID, $wpdb->get_blog_prefix() . 'user_avatar', true );
 			$avatar_url = wp_get_attachment_url( intval( $avatar_id ) );
-			//update_user_meta( $user->ID, 'basic_user_avatar', array( 'full' => $avatar_url ) );
+			update_user_meta( $user->ID, 'basic_user_avatar', array( 'full' => $avatar_url ) );
 		}
-
+		
 		exit;
 	}
 }
