@@ -487,20 +487,8 @@ class basic_user_avatars {
 		}
 
 		// Grab all users that have a local avatar.
-		$user_avatar_check = get_users( array(
-			'meta_query' => array(
-				'relation' => 'AND',
-				array(
-					'key'     => $wpdb->get_blog_prefix() . 'user_avatar',
-					'compare' => 'EXISTS',
-				),
-				array(
-					'key'     => 'basic_user_avatar',
-					'compare' => 'NOT EXISTS',
-				),
-			),
-			'number' => 1
-		) );
+		$sqlQuery = "SELECT umeta_id FROM $wpdb->usermeta WHERE meta_key = '" . $wpdb->get_blog_prefix() . "user_avatar' LIMIT 1";
+		$user_avatar_check = $wpdb->get_var( $sqlQuery );
 
 		if ( empty( $user_avatar_check ) ) {
 			return;
