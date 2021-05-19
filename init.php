@@ -478,8 +478,8 @@ class basic_user_avatars {
 		global $wpdb;
 
 		// Was this notice already dismissed?
-		$swsales_migration_notice_dismissed = get_option( 'basic_user_avatars_wp_user_avatar_notification_dismissed', 0 );
-		if ( $swsales_migration_notice_dismissed || ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] === 'basic_user_avatars_wp_user_avatar_migrate' ) ) {
+		$migration_notice_dismissed = get_option( 'basic_user_avatars_wp_user_avatar_notification_dismissed', 0 );
+		if ( $migration_notice_dismissed || ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] === 'basic_user_avatars_wp_user_avatar_migrate' ) ) {
 			return;
 		} elseif ( ! empty($_REQUEST['basic_user_avatars_wp_user_avatar_notification_dismissed'] ) && current_user_can( 'manage_options' ) ) {
 			update_option('basic_user_avatars_wp_user_avatar_notification_dismissed', 1, 'no');
