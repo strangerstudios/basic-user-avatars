@@ -47,6 +47,9 @@ If things are still not functioning properly then proceed to reporting an issue.
 1. Option on the bbPress user profile edit page. 
 
 == Changelog ==
+= 1.0.5 - 2021-05-19 =
+* ENHANCEMENT: Now pulling avatar from WP User Avatar if we don't have one yet
+
 = 1.0.4 - 2020-01-12 =
 * BUG FIX: Fixed typos on readme.txt - Thanks @fred-pedro
 * ENHANCEMENT: Added translation for Spanish - Thanks @ricardpriet
