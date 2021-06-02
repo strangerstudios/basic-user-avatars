@@ -2,7 +2,7 @@
 Contributors: strangerstudios, jaredatch
 Tags: avatar, gravatar, bbpress, profiles
 Requires at least: 4.5
-Tested up to: 5.5
+Tested up to: 5.7.2
 Stable tag: trunk
  
 Adds an avatar upload field to user profiles. Front-end support. bbPress support.
