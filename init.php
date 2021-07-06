@@ -59,19 +59,20 @@ class basic_user_avatars {
 		$this->load_textdomain();
 
 		// Actions
-		add_action( 'admin_init',                array( $this, 'admin_init'               )        );
-		add_action( 'show_user_profile',         array( $this, 'edit_user_profile'        )        );
-		add_action( 'edit_user_profile',         array( $this, 'edit_user_profile'        )        );
-		add_action( 'personal_options_update',   array( $this, 'edit_user_profile_update' )        );
-		add_action( 'edit_user_profile_update',  array( $this, 'edit_user_profile_update' )        );
+		add_action( 'admin_init',				 array( $this, 'admin_init'               )        );
+		add_action( 'show_user_profile',		 array( $this, 'edit_user_profile'        )        );
+		add_action( 'edit_user_profile',		 array( $this, 'edit_user_profile'        )        );
+		add_action( 'personal_options_update',	 array( $this, 'edit_user_profile_update' )        );
+		add_action( 'edit_user_profile_update',	 array( $this, 'edit_user_profile_update' )        );
 		add_action( 'bbp_user_edit_after_about', array( $this, 'bbpress_user_profile'     )        );
 
 		// Shortcode
-		add_shortcode( 'basic-user-avatars',     array( $this, 'shortcode'                )        );
+		add_shortcode( 'basic-user-avatars',	 array( $this, 'shortcode'                )        );
 
 		// Filters
-		add_filter( 'get_avatar',                array( $this, 'get_avatar'               ), 10, 5 );
-		add_filter( 'avatar_defaults',           array( $this, 'avatar_defaults'          )        );
+		add_filter( 'get_avatar_data',			 array( $this, 'get_avatar_data'               ), 10, 2 );
+		add_filter( 'get_avatar',				 array( $this, 'get_avatar'               ), 10, 6 );
+		add_filter( 'avatar_defaults',			 array( $this, 'avatar_defaults'          )        );
 	}
 
 	/**
@@ -127,30 +128,40 @@ class basic_user_avatars {
 	}
 
 	/**
-	 * Filter the avatar WordPress returns
+	 * Filter the avatar data WordPress returns
 	 *
-	 * @since 1.0.0
-	 * @param string $avatar 
-	 * @param int/string/object $id_or_email
-	 * @param int $size 
-	 * @param string $default
-	 * @param boolean $alt 
-	 * @return string
+	 * @since 1.0.6
+	 * @param array $args
+	 * @param mixed $id_or_email
+	 * @return array
 	 */
-	public function get_avatar( $avatar = '', $id_or_email, $size = 96, $default = '', $alt = false ) {
+	public function get_avatar_data( $args, $id_or_email ) {
 		global $wpdb;
 
-		// Determine if we recive an ID or string
-		if ( is_numeric( $id_or_email ) )
+		$return_args = $args;
+
+		// Determine if we received an ID or string. Then, set the $user_id variable.
+		if ( is_numeric( $id_or_email ) && 0 < $id_or_email ) {
 			$user_id = (int) $id_or_email;
-		elseif ( is_string( $id_or_email ) && ( $user = get_user_by( 'email', $id_or_email ) ) )
-			$user_id = $user->ID;
-		elseif ( is_object( $id_or_email ) && ! empty( $id_or_email->user_id ) )
-			$user_id = (int) $id_or_email->user_id;
+		} elseif ( is_object( $id_or_email ) && isset( $id_or_email->user_id ) && 0 < $id_or_email->user_id ) {
+			$user_id = $id_or_email->user_id;
+		} elseif ( is_object( $id_or_email ) && isset( $id_or_email->ID ) && isset( $id_or_email->user_login ) && 0 < $id_or_email->ID ) {
+			$user_id = $id_or_email->ID;
+		} elseif ( ! is_object( $id_or_email ) && false !== strpos( $id_or_email, '@' ) ) {
+			$_user = get_user_by( 'email', $id_or_email );
 
-		if ( empty( $user_id ) )
-			return $avatar;
+			if ( ! empty( $_user ) ) {
+				$user_id = $_user->ID;
+			}
+		}
 
+		if ( empty( $user_id ) ) {
+			return $args;
+		}
+
+		$user_avatar_url = null;
+
+		// Get the user's local avatar from usermeta.
 		$local_avatars = get_user_meta( $user_id, 'basic_user_avatar', true );
 
 		if ( empty( $local_avatars ) || empty( $local_avatars['full'] ) ) {
@@ -161,14 +172,12 @@ class basic_user_avatars {
 				$local_avatars = array( 'full' => $wp_user_avatar_url );
 				update_user_meta( $user_id, 'basic_user_avatar', $local_avatars );
 			} else {
-				return $avatar;
+				// We don't have a local avatar, just return.
+				return $args;
 			}	
 		}
 
-		$size = (int) $size;
-
-		if ( empty( $alt ) )
-			$alt = get_the_author_meta( 'display_name', $user_id );
+		$size = (int) $args['size'];
 
 		// Generate a new size
 		if ( empty( $local_avatars[$size] ) ) {
@@ -193,18 +202,38 @@ class basic_user_avatars {
 			// Save updated avatar sizes
 			update_user_meta( $user_id, 'basic_user_avatar', $local_avatars );
 
-		} elseif ( substr( $local_avatars[$size], 0, 4 ) != 'http' ) {
-			$local_avatars[$size] = home_url( $local_avatars[$size] );
+		} elseif ( substr( $local_avatars[ $size ], 0, 4 ) != 'http' ) {
+			$local_avatars[ $size ] = home_url( $local_avatars[ $size ] );
 		}
 
 		if ( is_ssl() ) {
 			$local_avatars[ $size ] = str_replace( 'http:', 'https:', $local_avatars[ $size ] );
 		}
 
-		$author_class = is_author( $user_id ) ? ' current-author' : '' ;
-		$avatar       = "<img alt='" . esc_attr( $alt ) . "' src='" . $local_avatars[$size] . "' class='avatar avatar-{$size}{$author_class} photo' height='{$size}' width='{$size}' />";
+		$user_avatar_url = $local_avatars[ $size ];
 
-		return apply_filters( 'basic_user_avatar', $avatar, $user_id );
+		if ( $user_avatar_url ) {
+			$return_args['url'] = $user_avatar_url;
+			$return_args['found_avatar'] = true;
+		}
+
+		return apply_filters( 'basic_user_avatar_data', $return_args );
+	}
+
+	/**
+	 * Filter the avatar WordPress returns
+	 *
+	 * @since 1.0.0
+	 * @param string $avatar
+	 * @param mixed $id_or_email
+	 * @param int $size
+	 * @param string $default
+	 * @param boolean $alt
+	 * @param array $args
+	 * @return string
+	 */
+	public function get_avatar( $avatar = '', $id_or_email, $size = 96, $default = '', $alt = false, $args ) {
+		return apply_filters( 'basic_user_avatar', $avatar, $id_or_email );
 	}
 
 	/**
