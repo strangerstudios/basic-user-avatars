@@ -1,0 +1,5 @@
+# Items to ignore when downloading a zip
+basic-user-avatars-banner.jpg export-ignore
+.gitattributes export-ignore
+.wordpress-org export-ignore
+README.md export-ignore

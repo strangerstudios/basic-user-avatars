@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Basic User Avatars
  * Plugin URI:  https://wordpress.org/plugins/basic-user-avatars/
- * Description: Adds an avatar upload field to user profiles. Also provides front-end avatar management via a shortcode and bbPress support. No frills. Fork of Simple Local Avatars 1.3.
- * Version:     1.0.5
+ * Description: Add an avatar upload field on frontend pages and Edit Profile screen so users can add a custom profile picture.
+ * Version:     1.0.6
  * Author:      Stranger Studios
  * Author URI:  https://www.strangerstudios.com/
  *
@@ -13,8 +13,7 @@
  * Orignal author url:  http://get10up.com
  * Original plugin url: http://wordpress.org/plugins/simple-local-avatars
  *
- * If you want some snazzy ajax and some other nifty features, check out Simple
- * Local Avatars 2.0+
+ * Check out Simple Local Avatars to compare their latest release to this plugin.
  * ---------------------------------------------------------------------------//
  *
  * This program is free software; you can redistribute it and/or modify
@@ -59,19 +58,20 @@ class basic_user_avatars {
 		$this->load_textdomain();
 
 		// Actions
-		add_action( 'admin_init',                array( $this, 'admin_init'               )        );
-		add_action( 'show_user_profile',         array( $this, 'edit_user_profile'        )        );
-		add_action( 'edit_user_profile',         array( $this, 'edit_user_profile'        )        );
-		add_action( 'personal_options_update',   array( $this, 'edit_user_profile_update' )        );
-		add_action( 'edit_user_profile_update',  array( $this, 'edit_user_profile_update' )        );
+		add_action( 'admin_init',				 array( $this, 'admin_init'               )        );
+		add_action( 'show_user_profile',		 array( $this, 'edit_user_profile'        )        );
+		add_action( 'edit_user_profile',		 array( $this, 'edit_user_profile'        )        );
+		add_action( 'personal_options_update',	 array( $this, 'edit_user_profile_update' )        );
+		add_action( 'edit_user_profile_update',	 array( $this, 'edit_user_profile_update' )        );
 		add_action( 'bbp_user_edit_after_about', array( $this, 'bbpress_user_profile'     )        );
 
 		// Shortcode
-		add_shortcode( 'basic-user-avatars',     array( $this, 'shortcode'                )        );
+		add_shortcode( 'basic-user-avatars',	 array( $this, 'shortcode'                )        );
 
 		// Filters
-		add_filter( 'get_avatar',                array( $this, 'get_avatar'               ), 10, 5 );
-		add_filter( 'avatar_defaults',           array( $this, 'avatar_defaults'          )        );
+		add_filter( 'get_avatar_data',			 array( $this, 'get_avatar_data'               ), 10, 2 );
+		add_filter( 'get_avatar',				 array( $this, 'get_avatar'               ), 10, 6 );
+		add_filter( 'avatar_defaults',			 array( $this, 'avatar_defaults'          )        );
 	}
 
 	/**
@@ -122,35 +122,50 @@ class basic_user_avatars {
 	 * @return array
 	 */
 	public function sanitize_options( $input ) {
-		$new_input['basic_user_avatars_caps'] = empty( $input['basic_user_avatars_caps'] ) ? 0 : 1;
+		$new_input['basic_user_avatars_caps'] = empty( $input ) ? 0 : 1;
 		return $new_input;
 	}
 
 	/**
-	 * Filter the avatar WordPress returns
+	 * Filter the normal avatar data and show our avatar if set.
 	 *
-	 * @since 1.0.0
-	 * @param string $avatar 
-	 * @param int/string/object $id_or_email
-	 * @param int $size 
-	 * @param string $default
-	 * @param boolean $alt 
-	 * @return string
+	 * @since 1.0.6
+	 * @param array $args        Arguments passed to get_avatar_data(), after processing.
+	 * @param mixed $id_or_email The avatar to retrieve. Accepts a user_id, Gravatar MD5 hash,
+	 *                           user email, WP_User object, WP_Post object, or WP_Comment object.
+	 * @return array             The filtered avatar data.
 	 */
-	public function get_avatar( $avatar = '', $id_or_email, $size = 96, $default = '', $alt = false ) {
+	public function get_avatar_data( $args, $id_or_email ) {
+		if ( ! empty( $args['force_default'] ) ) {
+			return $args;
+		}
+
 		global $wpdb;
 
-		// Determine if we recive an ID or string
-		if ( is_numeric( $id_or_email ) )
+		$return_args = $args;
+
+		// Determine if we received an ID or string. Then, set the $user_id variable.
+		if ( is_numeric( $id_or_email ) && 0 < $id_or_email ) {
 			$user_id = (int) $id_or_email;
-		elseif ( is_string( $id_or_email ) && ( $user = get_user_by( 'email', $id_or_email ) ) )
-			$user_id = $user->ID;
-		elseif ( is_object( $id_or_email ) && ! empty( $id_or_email->user_id ) )
-			$user_id = (int) $id_or_email->user_id;
+		} elseif ( is_object( $id_or_email ) && isset( $id_or_email->user_id ) && 0 < $id_or_email->user_id ) {
+			$user_id = $id_or_email->user_id;
+		} elseif ( is_object( $id_or_email ) && isset( $id_or_email->ID ) && isset( $id_or_email->user_login ) && 0 < $id_or_email->ID ) {
+			$user_id = $id_or_email->ID;
+		} elseif ( is_string( $id_or_email ) && false !== strpos( $id_or_email, '@' ) ) {
+			$_user = get_user_by( 'email', $id_or_email );
 
-		if ( empty( $user_id ) )
-			return $avatar;
+			if ( ! empty( $_user ) ) {
+				$user_id = $_user->ID;
+			}
+		}
 
+		if ( empty( $user_id ) ) {
+			return $args;
+		}
+
+		$user_avatar_url = null;
+
+		// Get the user's local avatar from usermeta.
 		$local_avatars = get_user_meta( $user_id, 'basic_user_avatar', true );
 
 		if ( empty( $local_avatars ) || empty( $local_avatars['full'] ) ) {
@@ -161,14 +176,12 @@ class basic_user_avatars {
 				$local_avatars = array( 'full' => $wp_user_avatar_url );
 				update_user_meta( $user_id, 'basic_user_avatar', $local_avatars );
 			} else {
-				return $avatar;
+				// We don't have a local avatar, just return.
+				return $args;
 			}	
 		}
 
-		$size = (int) $size;
-
-		if ( empty( $alt ) )
-			$alt = get_the_author_meta( 'display_name', $user_id );
+		$size = (int) $args['size'];
 
 		// Generate a new size
 		if ( empty( $local_avatars[$size] ) ) {
@@ -193,18 +206,58 @@ class basic_user_avatars {
 			// Save updated avatar sizes
 			update_user_meta( $user_id, 'basic_user_avatar', $local_avatars );
 
-		} elseif ( substr( $local_avatars[$size], 0, 4 ) != 'http' ) {
-			$local_avatars[$size] = home_url( $local_avatars[$size] );
+		} elseif ( substr( $local_avatars[ $size ], 0, 4 ) != 'http' ) {
+			$local_avatars[ $size ] = home_url( $local_avatars[ $size ] );
 		}
 
 		if ( is_ssl() ) {
 			$local_avatars[ $size ] = str_replace( 'http:', 'https:', $local_avatars[ $size ] );
 		}
 
-		$author_class = is_author( $user_id ) ? ' current-author' : '' ;
-		$avatar       = "<img alt='" . esc_attr( $alt ) . "' src='" . $local_avatars[$size] . "' class='avatar avatar-{$size}{$author_class} photo' height='{$size}' width='{$size}' />";
+		$user_avatar_url = $local_avatars[ $size ];
 
-		return apply_filters( 'basic_user_avatar', $avatar, $user_id );
+		if ( $user_avatar_url ) {
+			$return_args['url'] = $user_avatar_url;
+			$return_args['found_avatar'] = true;
+		}
+
+		/**
+		 * Allow filtering the avatar data that we are overriding.
+		 *
+		 * @since 1.0.6
+		 *
+		 * @param array $return_args The list of user avatar data arguments.
+		 */
+		return apply_filters( 'basic_user_avatar_data', $return_args );
+	}
+
+	/**
+	 * Add a backwards compatible hook to further filter our customized avatar HTML.
+	 *
+	 * @since 1.0.0
+	 * 
+	 * @param string $avatar      HTML for the user's avatar.
+	 * @param mixed  $id_or_email The avatar to retrieve. Accepts a user_id, Gravatar MD5 hash,
+	 *                            user email, WP_User object, WP_Post object, or WP_Comment object.
+	 * @param int    $size        Square avatar width and height in pixels to retrieve.
+	 * @param string $default     URL for the default image or a default type. Accepts '404', 'retro', 'monsterid',
+	 *                            'wavatar', 'indenticon', 'mystery', 'mm', 'mysteryman', 'blank', or 'gravatar_default'.
+	 * @param string $alt         Alternative text to use in the avatar image tag.
+	 * @param array  $args        Arguments passed to get_avatar_data(), after processing.
+	 * @return string             The filtered avatar HTML.
+	 */
+	public function get_avatar( $avatar, $id_or_email, $size = 96, $default = '', $alt = false, $args ) {
+		/**
+		 * Filter to further customize the avatar HTML.
+		 * 
+		 * @since 1.0.0
+		 * @param string $avatar HTML for the user's avatar.
+		 * @param mixed  $id_or_email The avatar to retrieve. Accepts a user_id, Gravatar MD5 hash,
+	 	 *                            user email, WP_User object, WP_Post object, or WP_Comment object.
+	 	 * @return string The filtered avatar HTML.
+		 * @deprecated since 1.0.6
+		 */
+		return apply_filters( 'basic_user_avatar', $avatar, $id_or_email );
 	}
 
 	/**
@@ -237,20 +290,20 @@ class basic_user_avatars {
 					wp_nonce_field( 'basic_user_avatar_nonce', '_basic_user_avatar_nonce', false );
 					
 					// File upload input
-					echo '<input type="file" name="basic-user-avatar" id="basic-local-avatar" /><br />';
+					echo '<input type="file" name="basic-user-avatar" id="basic-local-avatar" />';
 
 					if ( empty( $profileuser->basic_user_avatar ) ) {
-						echo '<span class="description">' . esc_html__( 'No local avatar is set. Use the upload field to add a local avatar.', 'basic-user-avatars' ) . '</span>';
+						echo '<p class="description">' . esc_html__( 'No local avatar is set. Use the upload field to add a local avatar.', 'basic-user-avatars' ) . '</p>';
 					} else {
-						echo '<input type="checkbox" name="basic-user-avatar-erase" id="basic-user-avatar-erase" value="1" /><label for="basic-user-avatar-erase">' . esc_html__( 'Delete local avatar', 'basic-user-avatars' ) . '</label><br />';
-						echo '<span class="description">' . esc_html__( 'Replace the local avatar by uploading a new avatar, or erase the local avatar (falling back to a gravatar) by checking the delete option.', 'basic-user-avatars' ) . '</span>';
+						echo '<p><input type="checkbox" name="basic-user-avatar-erase" id="basic-user-avatar-erase" value="1" /><label for="basic-user-avatar-erase">' . esc_html__( 'Delete local avatar', 'basic-user-avatars' ) . '</label></p>';
+						echo '<p class="description">' . esc_html__( 'Replace the local avatar by uploading a new avatar, or erase the local avatar (falling back to a gravatar) by checking the delete option.', 'basic-user-avatars' ) . '</p>';
 					}
 
 				} else {
 					if ( empty( $profileuser->basic_user_avatar ) ) {
-						echo '<span class="description">' . esc_html__( 'No local avatar is set. Set up your avatar at Gravatar.com.', 'basic-user-avatars' ) . '</span>';
+						echo '<p class="description">' . esc_html__( 'No local avatar is set. Set up your avatar at Gravatar.com.', 'basic-user-avatars' ) . '</p>';
 					} else {
-						echo '<span class="description">' . esc_html__( 'You do not have media management permissions. To change your local avatar, contact the site administrator.', 'basic-user-avatars' ) . '</span>';
+						echo '<p class="description">' . esc_html__( 'You do not have media management permissions. To change your local avatar, contact the site administrator.', 'basic-user-avatars' ) . '</p>';
 					}	
 				}
 				?>
@@ -357,9 +410,11 @@ class basic_user_avatars {
 				if ( empty( $profileuser->basic_user_avatar ) ) {
 					echo '<p class="description">' . apply_filters( 'bu_avatars_no_avatar_set_text',esc_html__( 'No local avatar is set. Use the upload field to add a local avatar.', 'basic-user-avatars' ), $profileuser ) . '</p>';
 				} else {
-					echo '<input type="checkbox" name="basic-user-avatar-erase" value="1" /> ' . apply_filters( 'bu_avatars_delete_avatar_text', esc_html__( 'Delete local avatar', 'basic-user-avatars' ), $profileuser ) . '<br />';
+					echo '<p><input type="checkbox" name="basic-user-avatar-erase" value="1" /> <label for="basic-user-avatar-erase">' . apply_filters( 'bu_avatars_delete_avatar_text', esc_html__( 'Delete local avatar', 'basic-user-avatars' ), $profileuser ) . '</label></p>';
 					echo '<p class="description">' . apply_filters( 'bu_avatars_replace_avatar_text', esc_html__( 'Replace the local avatar by uploading a new avatar, or erase the local avatar (falling back to a gravatar) by checking the delete option.', 'basic-user-avatars' ), $profileuser ) . '</p>';
 				}
+
+				echo '<input type="submit" name="manage_avatar_submit" value="' . apply_filters( 'bu_avatars_update_button_text', esc_attr__( 'Update Avatar', 'basic-user-avatars' ) ) . '" />';
 
 			} else {
 				if ( empty( $profileuser->basic_user_avatar ) ) {
@@ -369,7 +424,6 @@ class basic_user_avatars {
 				}	
 			}
 			?>
-			<input type="submit" name="manage_avatar_submit" value="<?php echo apply_filters( 'bu_avatars_update_button_text', esc_attr__( 'Update Avatar', 'basic-user-avatars' ) ); ?>" />
 		</form>
 		<?php
 		return ob_get_clean();
