@@ -128,14 +128,19 @@ class basic_user_avatars {
 	}
 
 	/**
-	 * Filter the avatar data WordPress returns
+	 * Filter the normal avatar data and show our avatar if set.
 	 *
 	 * @since 1.0.6
-	 * @param array $args
-	 * @param mixed $id_or_email
-	 * @return array
+	 * @param array $args        Arguments passed to get_avatar_data(), after processing.
+	 * @param mixed $id_or_email The avatar to retrieve. Accepts a user_id, Gravatar MD5 hash,
+	 *                           user email, WP_User object, WP_Post object, or WP_Comment object.
+	 * @return array The filtered avatar data.
 	 */
 	public function get_avatar_data( $args, $id_or_email ) {
+		if ( ! empty( $args['force_default'] ) ) {
+			return $args;
+		}
+
 		global $wpdb;
 
 		$return_args = $args;
@@ -147,7 +152,7 @@ class basic_user_avatars {
 			$user_id = $id_or_email->user_id;
 		} elseif ( is_object( $id_or_email ) && isset( $id_or_email->ID ) && isset( $id_or_email->user_login ) && 0 < $id_or_email->ID ) {
 			$user_id = $id_or_email->ID;
-		} elseif ( ! is_object( $id_or_email ) && false !== strpos( $id_or_email, '@' ) ) {
+		} elseif ( is_string( $id_or_email ) && false !== strpos( $id_or_email, '@' ) ) {
 			$_user = get_user_by( 'email', $id_or_email );
 
 			if ( ! empty( $_user ) ) {
@@ -217,22 +222,42 @@ class basic_user_avatars {
 			$return_args['found_avatar'] = true;
 		}
 
+		/**
+		 * Allow filtering the avatar data that we are overriding.
+		 *
+		 * @since 1.0.6
+		 *
+		 * @param array $return_args The list of user avatar data arguments.
+		 */
 		return apply_filters( 'basic_user_avatar_data', $return_args );
 	}
 
 	/**
-	 * Filter the avatar WordPress returns
+	 * Add a backwards compatible hook to further filter our customized avatar HTML.
 	 *
 	 * @since 1.0.0
-	 * @param string $avatar
-	 * @param mixed $id_or_email
-	 * @param int $size
-	 * @param string $default
-	 * @param boolean $alt
-	 * @param array $args
-	 * @return string
+	 * 
+	 * @param string $avatar      HTML for the user's avatar.
+	 * @param mixed  $id_or_email The avatar to retrieve. Accepts a user_id, Gravatar MD5 hash,
+	 *                            user email, WP_User object, WP_Post object, or WP_Comment object.
+	 * @param int    $size        Square avatar width and height in pixels to retrieve.
+	 * @param string $default     URL for the default image or a default type. Accepts '404', 'retro', 'monsterid',
+	 *                            'wavatar', 'indenticon', 'mystery', 'mm', 'mysteryman', 'blank', or 'gravatar_default'.
+	 * @param string $alt         Alternative text to use in the avatar image tag.
+	 * @param array  $args        Arguments passed to get_avatar_data(), after processing.
+	 * @return string The filtered avatar HTML.
 	 */
-	public function get_avatar( $avatar = '', $id_or_email, $size = 96, $default = '', $alt = false, $args ) {
+	public function get_avatar( $avatar, $id_or_email, $size = 96, $default = '', $alt = false, $args ) {
+		/**
+		 * Filter to further customize the avatar HTML.
+		 * 
+		 * @since 1.0.0
+		 * @param string $avatar HTML for the user's avatar.
+		 * @param mixed  $id_or_email The avatar to retrieve. Accepts a user_id, Gravatar MD5 hash,
+	 	 *                            user email, WP_User object, WP_Post object, or WP_Comment object.
+	 	 * @return string The filtered avatar HTML.
+		 * @deprecated since 1.0.6
+		 */
 		return apply_filters( 'basic_user_avatar', $avatar, $id_or_email );
 	}
 
