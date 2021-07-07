@@ -8,7 +8,7 @@
 
 ### Welcome to the Basic User Avatars GitHub Repository
 
-This plugin adds an avatar upload field on frontend pages and on the Edit Profile screen so users can add a custom profile picture. =
+This plugin adds an avatar upload field on frontend pages and on the Edit Profile screen so users can add a custom profile picture.
 
 Community and Membership sites on WordPress use this plugin as a lightweight solution for custom user avatars. The plugin is compatible with bbPress, as well as many popular plugins with frontend user registration and profile management features.
 
