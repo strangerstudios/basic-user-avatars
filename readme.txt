@@ -17,6 +17,8 @@ Admins can upload a user's avatar on the Edit User admin screen.
 
 Basic User Avatars also supports front-end avatar management for sites that want to keep users out of the dashboard. To use this feature, add the shortcode `[basic-user-avatars]` to any page in your WordPress site. We recommended placing this shortcode on another logged-in account type page, such as the WooCommerce My Account page, the Membership Account page, or any other front-end profile edit form.
 
+The Avatar Upload form is automatically added to the bbPress User Profile > Edit frontend page.
+
 If you do not want your users to be able to update their avatar, navigate to Settings > Discussion and locate the "Local Avatar Permissions" setting. Check this box to only allow users with file upload capabilities to upload local avatars (Author role and above).
 
 = Seamlessly Migrate from WP User Avatar Plugin =
