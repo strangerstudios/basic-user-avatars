@@ -134,7 +134,7 @@ class basic_user_avatars {
 	 * @param array $args        Arguments passed to get_avatar_data(), after processing.
 	 * @param mixed $id_or_email The avatar to retrieve. Accepts a user_id, Gravatar MD5 hash,
 	 *                           user email, WP_User object, WP_Post object, or WP_Comment object.
-	 * @return array The filtered avatar data.
+	 * @return array             The filtered avatar data.
 	 */
 	public function get_avatar_data( $args, $id_or_email ) {
 		if ( ! empty( $args['force_default'] ) ) {
@@ -245,7 +245,7 @@ class basic_user_avatars {
 	 *                            'wavatar', 'indenticon', 'mystery', 'mm', 'mysteryman', 'blank', or 'gravatar_default'.
 	 * @param string $alt         Alternative text to use in the avatar image tag.
 	 * @param array  $args        Arguments passed to get_avatar_data(), after processing.
-	 * @return string The filtered avatar HTML.
+	 * @return string             The filtered avatar HTML.
 	 */
 	public function get_avatar( $avatar, $id_or_email, $size = 96, $default = '', $alt = false, $args ) {
 		/**
