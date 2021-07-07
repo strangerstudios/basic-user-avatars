@@ -49,9 +49,9 @@ If things are still not functioning properly then proceed to reporting an issue.
 
 == Screenshots ==
 
-1. Option on the user profile edit page. 
-1. Option on the front-end via the shortcode.
-1. Option on the bbPress user profile edit page. 
+1. Frontend avatar upload form with a custom user profile picture and delete option.
+1. Frontend avatar upload form without a custom profile picture. 
+1. Avatar upload field on the Edit User screen in the WordPress admin.
 
 == Changelog ==
 
