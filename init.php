@@ -6,6 +6,8 @@
  * Version:     1.0.6
  * Author:      Stranger Studios
  * Author URI:  https://www.strangerstudios.com/
+ * Text Domain: basic-user-avatars
+ * Domain Path: /languages
  *
  * ---------------------------------------------------------------------------//
  * This plugin is a fork of Simple Local Avatars v1.3.1 by Jake Goldman (10up).
