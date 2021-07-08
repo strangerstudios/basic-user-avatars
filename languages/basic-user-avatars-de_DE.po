@@ -1,0 +1,101 @@
+# Copyright (C) 2015 Basic User Avatars
+# This file is distributed under the same license as the Basic User Avatars package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Basic User Avatars 1.0.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/basic-user-"
+"avatars\n"
+"POT-Creation-Date: 2015-04-17 13:57:40+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2021-01-25 13:56+0000\n"
+"Last-Translator: Ole (olpo.de)\n"
+"Language-Team: Deutsch\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.5.0; wp-5.6"
+
+#: init.php:98
+msgid "Local Avatar Permissions"
+msgstr "lokale Avatar Berechtigungen"
+
+#: init.php:112
+msgid ""
+"Only allow users with file upload capabilities to upload local avatars "
+"(Authors and above)"
+msgstr ""
+"Erlaube nur Benutzern mit Datei-Upload-Berechtigung, lokale Avatare (Autoren "
+"und höher) hochzuladen."
+
+#: init.php:206 init.php:369
+msgid "Avatar"
+msgstr "Avatar"
+
+#: init.php:209
+msgid "Upload Avatar"
+msgstr "Avatar hochladen"
+
+#: init.php:224 init.php:335 init.php:382
+msgid "No local avatar is set. Use the upload field to add a local avatar."
+msgstr ""
+"Es ist kein lokaler Avatar festgelegt. Verwende das Upload-Feld, um einen "
+"lokalen Avatar hinzuzufügen."
+
+#: init.php:226 init.php:337 init.php:384
+msgid "Delete local avatar"
+msgstr "Avatar löschen"
+
+#: init.php:227 init.php:338 init.php:385
+msgid ""
+"Replace the local avatar by uploading a new avatar, or erase the local "
+"avatar (falling back to a gravatar) by checking the delete option."
+msgstr ""
+"Ersetzen den lokalen Avatar durch Hochladen eines neuen Avatars oder lösche "
+"den lokalen Avatar (es wird dann auf Gravatar zurückgegriffen), indem du die "
+"Löschoption aktivierst."
+
+#: init.php:232 init.php:343 init.php:390
+msgid "No local avatar is set. Set up your avatar at Gravatar.com."
+msgstr ""
+"Es ist kein lokaler Avatar festgelegt. Richte deinen Avatar bei Gravatar.com "
+"ein."
+
+#: init.php:234 init.php:345 init.php:392
+msgid ""
+"You do not have media management permissions. To change your local avatar, "
+"contact the site administrator."
+msgstr ""
+"Du hast keine Medienverwaltungsberechtigungen. Wende dich an den Seiten-"
+"Administrator, um deinen Avatar zu ändern."
+
+#: init.php:349
+msgid "Update Avatar"
+msgstr "Avatar aktualisieren"
+
+#. Plugin Name of the plugin/theme
+msgid "Basic User Avatars"
+msgstr "basic User Avatar"
+
+#. Plugin URI of the plugin/theme
+msgid "http://wordpress.org/extend/basic-user-avatars"
+msgstr "http://wordpress.org/extend/basic-user-avatars"
+
+#. Description of the plugin/theme
+msgid ""
+"Adds an avatar upload field to user profiles. Also provides front-end avatar "
+"management via a shortcode and bbPress support. No frills. Fork of Simple "
+"Local Avatars 1.3."
+msgstr ""
+"Fügt ein Upload-Feld zu Benutzerprofilen hinzu. Bietet auch Front-End-Avatar-"
+"Verwaltung über einen Shortcode und bbPress-Unterstützung. Kein "
+"Schnickschnack. Fork von Simple Local Avatars 1.3"
+
+#. Author of the plugin/theme
+msgid "Jared Atchison"
+msgstr "Jared Atchison"
+
+#. Author URI of the plugin/theme
+msgid "http://jaredatchison.com"
+msgstr "http://jaredatchison.com"
