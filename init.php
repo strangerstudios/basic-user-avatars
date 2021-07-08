@@ -523,7 +523,8 @@ class basic_user_avatars {
 	 */
 	public function unique_filename_callback( $dir, $name, $ext ) {
 		$user = get_user_by( 'id', (int) $this->user_id_being_edited );
-		$name = $base_name = sanitize_file_name( $user->display_name . '_avatar' );
+		$name = $base_name = sanitize_file_name( strtolower( $user->display_name ) . '_avatar' );
+
 		$number = 1;
 
 		while ( file_exists( $dir . "/$name$ext" ) ) {
