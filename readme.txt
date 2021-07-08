@@ -3,7 +3,7 @@ Contributors: strangerstudios, jaredatch
 Tags: avatar, gravatar, user profile, users, profile
 Requires at least: 4.5
 Tested up to: 5.7.2
-Stable tag: trunk
+Stable tag: 1.0.6
 
 Add an avatar upload field on frontend pages and Edit Profile screen so users can add a custom profile picture.
 
@@ -58,9 +58,12 @@ If things are still not functioning properly then proceed to reporting an issue.
 == Changelog ==
 
 = 1.0.6 =
-* BUG FIX: Fixed issue with saving the Discussion setting limiting avatar upload to users with file upload capabilities.
+* ENHANCEMENT: Added translation for German locale. Thanks @olpo24
+* ENHANCEMENT: Added translation for Italian locale. Thanks @domegang
 * ENHANCEMENT: Now filtering the get_avatar_data WordPress hook to allow more flexibility in customizing avatars via other filters.
 * ENHANCEMENT: Added filter `basic_user_avatar_data` to allow filtering on the avatar data that we are overriding.
+* BUG FIX: Fixed issue with saving the Discussion setting limiting avatar upload to users with file upload capabilities.
+* BUG FIX: Fixed an issue when user display names were interfering and causing 404 errors. Thanks @semanio.
 
 = 1.0.5 - 2021-05-19 =
 * ENHANCEMENT: Now pulling avatar from WP User Avatar if we don't have one yet
