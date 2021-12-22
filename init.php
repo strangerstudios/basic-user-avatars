@@ -349,6 +349,7 @@ class basic_user_avatars {
 			 * @param bool $delete_before_upload Whether to delete existing avatar for user before uploading new avatar.
 			 */
 			$delete_before_upload = apply_filters( 'basic_user_avatar_delete_avatar_before_upload', false );
+
 			/*
 			 * Delete old images before handling the upload.
 			 *
