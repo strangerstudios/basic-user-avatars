@@ -341,8 +341,20 @@ class basic_user_avatars {
 			if ( ! function_exists( 'wp_handle_upload' ) )
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 
-			// Delete old images if successful - This can cause issues with caching when enabled
-			if( apply_filters( 'basic_user_avatar_delete_avatar_before_upload', false ) ){
+			/**
+			 * Allow filtering whether to delete existing avatar for user before uploading new avatar.
+			 *
+			 * @since 1.0.7
+			 *
+			 * @param bool $delete_before_upload Whether to delete existing avatar for user before uploading new avatar.
+			 */
+			$delete_before_upload = apply_filters( 'basic_user_avatar_delete_avatar_before_upload', false );
+			/*
+			 * Delete old images before handling the upload.
+			 *
+			 * Note: This can cause issues with caching.
+			 */
+			if ( $delete_before_upload ) {
 				$this->avatar_delete( $this->user_id_being_edited );
 			}
 
