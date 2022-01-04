@@ -460,7 +460,7 @@ class basic_user_avatars {
 					if ( empty( $profileuser->basic_user_avatar ) ) {
 						echo '<span class="description" style="margin-left:0;">' . apply_filters( 'bu_avatars_no_avatar_set_text', esc_html__( 'No local avatar is set. Use the upload field to add a local avatar.', 'basic-user-avatars' ), $profileuser ) . '</span>';
 					} else {
-						echo '<input type="checkbox" name="basic-user-avatar-erase" value="1" style="width:auto" /> ' . apply_filters( 'bu_avatars_delete_avatar_text', __( 'Delete local avatar', 'basic-user-avatars' ), $profileuser ) . '<br />';
+						echo '<label><input type="checkbox" name="basic-user-avatar-erase" value="1" style="width:auto;margin-right:5px;" />' . apply_filters( 'bu_avatars_delete_avatar_text', __( 'Delete local avatar', 'basic-user-avatars' ), $profileuser ) . '</label><br />';
 						echo '<span class="description" style="margin-left:0;">' . apply_filters( '', esc_html__( 'Replace the local avatar by uploading a new avatar, or erase the local avatar (falling back to a gravatar) by checking the delete option.', 'basic-user-avatars' ), $profileuser ) . '</span>';
 					}
 
