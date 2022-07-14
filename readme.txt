@@ -1,8 +1,8 @@
 === Basic User Avatars ===
 Contributors: strangerstudios, jaredatch
 Tags: avatar, gravatar, user profile, users, profile
-Requires at least: 4.5
-Tested up to: 5.7.2
+Requires at least: 5.2
+Tested up to: 5.9
 Stable tag: 1.0.6
 
 Add an avatar upload field on frontend pages and Edit Profile screen so users can add a custom profile picture.

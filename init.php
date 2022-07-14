@@ -341,8 +341,7 @@ class basic_user_avatars {
 			if ( ! function_exists( 'wp_handle_upload' ) )
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 
-			// Delete old images if successful
-			$this->avatar_delete( $user_id );
+			$this->avatar_delete( $this->user_id_being_edited );
 
 			// Need to be more secure since low privelege users can upload
 			if ( strstr( $_FILES['basic-user-avatar']['name'], '.php' ) )
