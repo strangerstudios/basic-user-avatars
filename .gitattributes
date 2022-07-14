@@ -3,3 +3,4 @@ basic-user-avatars-banner.jpg export-ignore
 .gitattributes export-ignore
 .wordpress-org export-ignore
 README.md export-ignore
+.github export-ignore
