@@ -248,7 +248,7 @@ class basic_user_avatars {
 	 * @param array  $args        Arguments passed to get_avatar_data(), after processing.
 	 * @return string             The filtered avatar HTML.
 	 */
-	public function get_avatar( $avatar, $id_or_email, $size = 96, $default = '', $alt = false, $args ) {
+	public function get_avatar( $avatar, $id_or_email, $size = 96, $default = '', $alt = false, $args = array() ) {
 		/**
 		 * Filter to further customize the avatar HTML.
 		 * 
