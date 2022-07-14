@@ -397,7 +397,7 @@ class basic_user_avatars {
 
 		ob_start();
 		?>
-		<form id="basic-user-avatar-form" action="<?php the_permalink(); ?>" method="post" enctype="multipart/form-data">
+		<form id="basic-user-avatar-form" method="post" enctype="multipart/form-data">
 			<?php
 			echo get_avatar( $profileuser->ID );
 
