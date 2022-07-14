@@ -3,7 +3,7 @@
  * Plugin Name: Basic User Avatars
  * Plugin URI:  https://wordpress.org/plugins/basic-user-avatars/
  * Description: Add an avatar upload field on frontend pages and Edit Profile screen so users can add a custom profile picture.
- * Version:     1.0.6
+ * Version:     1.0.7
  * Author:      Stranger Studios
  * Author URI:  https://www.strangerstudios.com/
  * Text Domain: basic-user-avatars
