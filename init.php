@@ -183,7 +183,7 @@ class basic_user_avatars {
 			}	
 		}
 
-		$size = (int) $args['size'];
+		$size = apply_filters( 'basic_user_avatar_size', (int) $args['size'], $args );
 
 		// Generate a new size
 		if ( empty( $local_avatars[$size] ) ) {
