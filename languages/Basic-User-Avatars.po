@@ -1,35 +1,73 @@
-# Copyright (C) 2022 Stranger Studios
-# This file is distributed under the same license as the Basic User Avatars plugin.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Basic User Avatars 1.0.7\n"
-"Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
-"Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
-"Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-01-13 14:25+0200\n"
+"PO-Revision-Date: 2023-01-13 14:27+0200\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-07-14T12:30:49+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.6.0\n"
-"X-Domain: Basic-User-Avatars\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.4.3\n"
+"Last-Translator: \n"
+"Language: en_US\n"
 
-#. Plugin Name of the plugin
-msgid "Basic User Avatars"
+#: init.php:100
+msgid "Local Avatar Permissions"
 msgstr ""
 
-#. Plugin URI of the plugin
-msgid "https://wordpress.org/plugins/basic-user-avatars/"
+#: init.php:114
+msgid ""
+"Only allow users with file upload capabilities to upload local avatars "
+"(Authors and above)"
 msgstr ""
 
-#. Description of the plugin
-msgid "Add an avatar upload field on frontend pages and Edit Profile screen so users can add a custom profile picture."
+#: init.php:280 init.php:447
+msgid "Avatar"
 msgstr ""
 
-#. Author of the plugin
-msgid "Stranger Studios"
+#: init.php:283
+msgid "Upload Avatar"
 msgstr ""
 
-#. Author URI of the plugin
-msgid "https://www.strangerstudios.com/"
+#: init.php:298 init.php:412 init.php:460
+msgid "No local avatar is set. Use the upload field to add a local avatar."
+msgstr ""
+
+#: init.php:300 init.php:414 init.php:462
+msgid "Delete local avatar"
+msgstr ""
+
+#: init.php:301 init.php:415 init.php:463
+msgid ""
+"Replace the local avatar by uploading a new avatar, or erase the local "
+"avatar (falling back to a gravatar) by checking the delete option."
+msgstr ""
+
+#: init.php:306 init.php:422 init.php:468
+msgid "No local avatar is set. Set up your avatar at Gravatar.com."
+msgstr ""
+
+#: init.php:308 init.php:424 init.php:470
+msgid ""
+"You do not have media management permissions. To change your local avatar, "
+"contact the site administrator."
+msgstr ""
+
+#: init.php:359
+msgid "Please upload a valid image file for the avatar."
+msgstr ""
+
+#: init.php:364
+msgid "There was an error uploading the avatar:"
+msgstr ""
+
+#: init.php:418
+msgid "Update Avatar"
 msgstr ""
