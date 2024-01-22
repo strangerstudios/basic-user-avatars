@@ -57,7 +57,7 @@ class basic_user_avatars {
 	public function __construct() {
 
 		// Text domain
-		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
+		add_action( 'init', array( $this, 'load_textdomain' ) );
 
 		// Actions
 		add_action( 'admin_init',				 array( $this, 'admin_init'               )        );
