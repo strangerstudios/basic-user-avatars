@@ -108,9 +108,12 @@ class basic_user_avatars {
 	 */
 	public function avatar_settings_field( $args ) {
 		$options = get_option( 'basic_user_avatars_caps' );
+
+		$basic_user_avatars_caps = ! empty( $options['basic_user_avatars_caps'] ) ? 1 : 0;
+
 		?>
 		<label for="basic_user_avatars_caps">
-			<input type="checkbox" name="basic_user_avatars_caps" id="basic_user_avatars_caps" value="1" <?php checked( $options['basic_user_avatars_caps'], 1 ); ?>/>
+			<input type="checkbox" name="basic_user_avatars_caps" id="basic_user_avatars_caps" value="1" <?php checked( $basic_user_avatars_caps, 1 ); ?>/>
 			<?php esc_html_e( 'Only allow users with file upload capabilities to upload local avatars (Authors and above)', 'basic-user-avatars' ); ?>
 		</label>
 		<?php
