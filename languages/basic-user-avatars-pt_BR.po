@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Basic User Avatars plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Basic User Avatars 1.0.7\n"
+"Project-Id-Version: Basic User Avatars 1.0.8\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-01-22T13:55:10+00:00\n"
+"POT-Creation-Date: 2024-01-23T12:05:52+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: basic-user-avatars\n"
@@ -21,6 +21,7 @@ msgstr "Permissões de Avatar Local"
 
 #: init.php:112
 #: init.php:114
+#: init.php:117
 msgid "Only allow users with file upload capabilities to upload local avatars (Authors and above)"
 msgstr "Permita apenas usuários com permisões de upload de arquivos a carregarem avatares locais (De autor para cima)"
 
@@ -28,11 +29,14 @@ msgstr "Permita apenas usuários com permisões de upload de arquivos a carregar
 #: init.php:369
 #: init.php:280
 #: init.php:447
+#: init.php:288
+#: init.php:460
 msgid "Avatar"
 msgstr "Avatar"
 
 #: init.php:209
 #: init.php:283
+#: init.php:291
 msgid "Upload Avatar"
 msgstr "Carregar Avatar"
 
@@ -42,6 +46,9 @@ msgstr "Carregar Avatar"
 #: init.php:298
 #: init.php:412
 #: init.php:460
+#: init.php:306
+#: init.php:425
+#: init.php:473
 msgid "No local avatar is set. Use the upload field to add a local avatar."
 msgstr "Nenhum avatar local definido. Use o campo de upload para adicionar um avatar local."
 
@@ -51,6 +58,9 @@ msgstr "Nenhum avatar local definido. Use o campo de upload para adicionar um av
 #: init.php:300
 #: init.php:414
 #: init.php:462
+#: init.php:308
+#: init.php:427
+#: init.php:475
 msgid "Delete local avatar"
 msgstr "Deletar avatar local"
 
@@ -60,6 +70,9 @@ msgstr "Deletar avatar local"
 #: init.php:301
 #: init.php:415
 #: init.php:463
+#: init.php:309
+#: init.php:428
+#: init.php:476
 msgid "Replace the local avatar by uploading a new avatar, or erase the local avatar (falling back to a gravatar) by checking the delete option."
 msgstr "Substitua o avatar local fazendo upload de um novo avatar, ou deletando o avatar local (caindo no uso do gravatar) marcando a opção de deletar."
 
@@ -69,6 +82,9 @@ msgstr "Substitua o avatar local fazendo upload de um novo avatar, ou deletando 
 #: init.php:306
 #: init.php:422
 #: init.php:468
+#: init.php:314
+#: init.php:435
+#: init.php:481
 msgid "No local avatar is set. Set up your avatar at Gravatar.com."
 msgstr "Nenhum avatar local definido. Defina o seu avatar em Gravatar.com."
 
@@ -78,11 +94,15 @@ msgstr "Nenhum avatar local definido. Defina o seu avatar em Gravatar.com."
 #: init.php:308
 #: init.php:424
 #: init.php:470
+#: init.php:316
+#: init.php:437
+#: init.php:483
 msgid "You do not have media management permissions. To change your local avatar, contact the site administrator."
 msgstr "Você não possui permissões de gerenciamento de mídia. Para alterar o seu avatar local, entre em contato com o administrador do site."
 
 #: init.php:349
 #: init.php:418
+#: init.php:431
 msgid "Update Avatar"
 msgstr "Atualizar Avatar"
 
@@ -124,9 +144,11 @@ msgid "https://www.strangerstudios.com/"
 msgstr ""
 
 #: init.php:359
+#: init.php:367
 msgid "Please upload a valid image file for the avatar."
 msgstr ""
 
 #: init.php:364
+#: init.php:377
 msgid "There was an error uploading the avatar:"
 msgstr ""
