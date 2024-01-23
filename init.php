@@ -186,7 +186,12 @@ class basic_user_avatars {
 			}	
 		}
 
-		$size = (int) $args['size'];
+		/**
+		 * Filter the default avatar size during upload.
+		 * @param $size int The default avatar size. Default 96.
+		 * @param $args array The default avatar args available at the time of this filter.
+		 */
+		$size = apply_filters( 'basic_user_avatars_default_size', (int) $args['size'], $args );
 
 		// Generate a new size
 		if ( empty( $local_avatars[$size] ) ) {
