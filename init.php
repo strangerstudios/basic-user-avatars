@@ -369,6 +369,11 @@ class basic_user_avatars {
 					break;
 				default :
 					add_action( 'user_profile_update_errors', function( $error = 'avatar_error' ){
+						// No error let's bail.
+						if ( empty( $avatar['error'] ) ) {
+							return;
+						}
+
 						"<strong>".esc_html__("There was an error uploading the avatar:","basic-user-avatars")."</strong> ". esc_attr( $avatar['error'] );
 					} );
 				}
