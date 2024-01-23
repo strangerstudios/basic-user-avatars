@@ -2,7 +2,7 @@
 Contributors: strangerstudios, jaredatch, paidmembershipspro
 Tags: avatar, gravatar, user profile, users, profile
 Requires at least: 5.2
-Tested up to: 6.4.1
+Tested up to: 6.4.2
 Stable tag: 1.0.7
 
 Add an avatar upload field on frontend pages and Edit Profile screen so users can add a custom profile picture.
@@ -56,6 +56,11 @@ If things are still not functioning properly then proceed to reporting an issue.
 1. Avatar upload field on the Edit User screen in the WordPress admin.
 
 == Changelog ==
+= 1.0.8 - 2024-01-23 =
+* ENHANCEMENT: Added filter 'basic_user_avatars_default_size' to allow changing the default size of the avatar. (Thanks @jarrydlong)
+* ENHANCEMENT: Improved functionality on how we load the text domain of the plugin for translations. (@ipokkel)
+* BUG FIX: Fixed a fatal issue when the option "Only allow users with file upload capabilities to upload local avatars (Authors and above)" wasn't set on new installations. (@JarrydLong)
+
 = 1.0.7 =
 * ENHANCEMENT: Made "Delete Local Avatar" checkbox text clickable for frontend. (Thanks @pinguluk )
 * BUG FIX: Fixed an issue where Avatars weren't saving correctly when changing an existing uploaded avatar. (Thanks @jarrydlong)
