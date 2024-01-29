@@ -349,7 +349,7 @@ class basic_user_avatars {
 			if ( ! function_exists( 'wp_handle_upload' ) )
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 
-			$this->avatar_delete( $this->user_id_being_edited );
+			$this->avatar_delete( $user_id );
 
 			// Need to be more secure since low privelege users can upload
 			if ( strstr( $_FILES['basic-user-avatar']['name'], '.php' ) )
