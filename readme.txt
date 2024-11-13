@@ -1,9 +1,9 @@
 === Basic User Avatars ===
-Contributors: strangerstudios, jaredatch, paidmembershipspro
+Contributors: strangerstudios, jaredatch
 Tags: avatar, gravatar, user profile, users, profile
 Requires at least: 5.2
-Tested up to: 6.4.2
-Stable tag: 1.0.7
+Tested up to: 6.7
+Stable tag: 1.0.9
 
 Add an avatar upload field on frontend pages and Edit Profile screen so users can add a custom profile picture.
 
@@ -35,8 +35,6 @@ Version 1.0.5 includes a feature to automatically convert avatars formerly loade
 
 bbPress support is added automatically if bbPress is activated.
 
-**[This plugin is on GitHub](https://github.com/strangerstudios/basic-user-avatars/)** and pull requests are welcome. If possible please report issues through Github.
-
 Note: This plugin is a fork of Simple Local Avatars v1.3.1 by Jake Goldman and 10up. Check out [Simple Local Avatars](http://wordpress.org/plugins/simple-local-avatars) to compare their latest release to this plugin.
 
 == Frequently Asked Questions ==
@@ -47,15 +45,16 @@ While this plugin has been tested with common server setups, some enviroments co
 
 If you are having a problem deactivate all plugins other than this one and then switch your theme to TwentyTweleve (or similar). If things work, then the issue is with a 3rd party theme or plugin.
 
-If things are still not functioning properly then proceed to reporting an issue. The ideal method is via [GitHub issues](https://github.com/strangerstudios/basic-user-avatars/issues/).
-
 == Screenshots ==
 
-1. Frontend avatar upload form with a custom user profile picture and delete option.
 1. Frontend avatar upload form without a custom profile picture. 
 1. Avatar upload field on the Edit User screen in the WordPress admin.
 
 == Changelog ==
+
+= 1.0.9 - 2024-11-13 =
+* ENHANCEMENT: Update tested up to WordPress 6.7.
+
 = 1.0.8 - 2024-01-23 =
 * ENHANCEMENT: Added filter 'basic_user_avatars_default_size' to allow changing the default size of the avatar. (Thanks @jarrydlong)
 * ENHANCEMENT: Improved functionality on how we load the text domain of the plugin for translations. (@ipokkel)
