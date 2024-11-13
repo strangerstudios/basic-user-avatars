@@ -1,21 +1,22 @@
-# Copyright (C) 2024 Stranger Studios
+# Copyright (C) 2024 Contributors
 # This file is distributed under the same license as the Basic User Avatars plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Basic User Avatars 1.0.8\n"
+"Project-Id-Version: Basic User Avatars 1.0.9\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-01-23T12:05:52+00:00\n"
+"POT-Creation-Date: 2024-11-13T20:22:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.9.0\n"
+"X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: basic-user-avatars\n"
 
 #: init.php:98
 #: init.php:100
+#: init.php:95
 msgid "Local Avatar Permissions"
 msgstr "Permisos del Avatar Local"
 
@@ -31,12 +32,15 @@ msgstr "Solo usuarios con capacidad de subir archivos pueden subir avatares loca
 #: init.php:447
 #: init.php:288
 #: init.php:460
+#: init.php:283
+#: init.php:455
 msgid "Avatar"
 msgstr "Avatar"
 
 #: init.php:209
 #: init.php:283
 #: init.php:291
+#: init.php:286
 msgid "Upload Avatar"
 msgstr "Subir Avatar"
 
@@ -49,6 +53,9 @@ msgstr "Subir Avatar"
 #: init.php:306
 #: init.php:425
 #: init.php:473
+#: init.php:301
+#: init.php:420
+#: init.php:468
 msgid "No local avatar is set. Use the upload field to add a local avatar."
 msgstr "Ningún avatar establecido. Utiliza el campo de subida de archivos para añadir un avatar."
 
@@ -61,6 +68,9 @@ msgstr "Ningún avatar establecido. Utiliza el campo de subida de archivos para 
 #: init.php:308
 #: init.php:427
 #: init.php:475
+#: init.php:303
+#: init.php:422
+#: init.php:470
 msgid "Delete local avatar"
 msgstr "Eliminar avatar local"
 
@@ -73,6 +83,9 @@ msgstr "Eliminar avatar local"
 #: init.php:309
 #: init.php:428
 #: init.php:476
+#: init.php:304
+#: init.php:423
+#: init.php:471
 msgid "Replace the local avatar by uploading a new avatar, or erase the local avatar (falling back to a gravatar) by checking the delete option."
 msgstr "Reemplaza el avalar local subiendo un nuevo avatar o borrando el avatar local (en su lugar se utilizará la imagen de Gravatar) seleccionando la opción eliminar."
 
@@ -85,6 +98,9 @@ msgstr "Reemplaza el avalar local subiendo un nuevo avatar o borrando el avatar 
 #: init.php:314
 #: init.php:435
 #: init.php:481
+#: init.php:309
+#: init.php:430
+#: init.php:476
 msgid "No local avatar is set. Set up your avatar at Gravatar.com."
 msgstr "No se ha configurado ningún avatar. Configura tu avatar en Gravatar.com."
 
@@ -97,17 +113,22 @@ msgstr "No se ha configurado ningún avatar. Configura tu avatar en Gravatar.com
 #: init.php:316
 #: init.php:437
 #: init.php:483
+#: init.php:311
+#: init.php:432
+#: init.php:478
 msgid "You do not have media management permissions. To change your local avatar, contact the site administrator."
 msgstr "No tienes los permisos necesarios para trabajar con medios. Para cambiar tu avatar contacta con el administrador del sitio."
 
 #: init.php:349
 #: init.php:418
 #: init.php:431
+#: init.php:426
 msgid "Update Avatar"
 msgstr "Actualizar Avatar"
 
 #. Plugin Name of the plugin/theme
 #. Plugin Name of the plugin
+#: init.php
 msgid "Basic User Avatars"
 msgstr "Basic User Avatars"
 
@@ -128,10 +149,12 @@ msgid "http://jaredatchison.com"
 msgstr "http://jaredatchison.com"
 
 #. Plugin URI of the plugin
+#: init.php
 msgid "https://wordpress.org/plugins/basic-user-avatars/"
 msgstr ""
 
 #. Description of the plugin
+#: init.php
 msgid "Add an avatar upload field on frontend pages and Edit Profile screen so users can add a custom profile picture."
 msgstr ""
 
@@ -145,10 +168,17 @@ msgstr ""
 
 #: init.php:359
 #: init.php:367
+#: init.php:362
 msgid "Please upload a valid image file for the avatar."
 msgstr ""
 
 #: init.php:364
 #: init.php:377
+#: init.php:372
 msgid "There was an error uploading the avatar:"
+msgstr ""
+
+#. Author of the plugin
+#: init.php
+msgid "Contributors"
 msgstr ""
