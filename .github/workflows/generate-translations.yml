@@ -13,6 +13,6 @@ jobs:
         generate_mo: 1
         generate_lang_packs: 1
         merge_changes: 1
-        headers: '{"Report-Msgid-Bugs-To":"info@paidmembershipspro.com","Last-Translator":"Paid Memberships Pro <info@paidmembershipspro.com>","Language-Team":"Paid Memberships Pro <info@paidmembershipspro.com>"}'
+        headers: '{"Report-Msgid-Bugs-To":"TBD","Last-Translator":"TBD","Language-Team":"TBD"}'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
